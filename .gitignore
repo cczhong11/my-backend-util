@@ -1,2 +1,4 @@
 *.pyc
 *.cookie
+__pycache__
+key.json
