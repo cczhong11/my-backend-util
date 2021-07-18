@@ -23,8 +23,7 @@ def run():
     
     # send data
     
-    bot = TelegramPush(api['telegram_tuisongzhushou'])
-    
+    bot = TelegramPush(api['telegram_tuisongzhushou'], False)
     for feed in jobs:
         if "实习" not in feed:
             if "在职跳槽" in feed:

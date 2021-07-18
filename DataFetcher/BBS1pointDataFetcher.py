@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from .DataFetcherBase import DataFetcherBase
 from web_util import parse_curl
 import re
-INTERVAL = "小时"
+INTERVAL = "秒"
 PATTERN = {
     "job": r'<u><b><font color=\"green\">(.*?)</font><font color=\"#00B2E8\">(.*?)</font></b>@<b><font color=\"#FF6600\">(.*?)</font></b></u>.*<b>\[<font color=\"purple\">(.*?)</font>@<font color=\"brown\">(.*?)</font>\] (.*)</b>(.*)\n',
     "application": r'<font color=\"#666\">(.*?)</font>.<font color=\"blue\">(.*?)</font>.<font color=\"black\"><b>(.*?)</b>\]</font>\[<font color=\"#F60\"><b>(.*?)</b></font>@<font color=\"#00B2E8\">(.*?)</font>\]</u> - <font color=\"brown\">(.*?)</font> - <font color=\"green\">(.*?)</font><font color=\"purple\">(.*?)</font>,<font color=\"hotpink\">.*</font><font color=\"brown\">.*</font>'
@@ -21,9 +21,9 @@ class BBS1pointDataFetcher(DataFetcherBase):
         self.feedList = []
         super(BBS1pointDataFetcher, self).__init__(cookie, run_feq, enable)
     
-    def load_cookie(self, cookie):
+    def load_cookie(self):
         cookie_str = ""
-        with open(cookie) as f:
+        with open(self.cookie) as f:
             cookie_str = f.read()
         _,header = parse_curl(cookie_str)
         self.header = header
@@ -35,7 +35,7 @@ class BBS1pointDataFetcher(DataFetcherBase):
             feedTitle = rs[0]
             feedUrl = feedTitle.attrs["href"]
             feedTitle = feedTitle.text
-            if self.feedListTime[idx].findChild("em") is not None and INTERVAL not in self.feedListTime[idx].findChild("em").text:
+            if self.feedListTime[idx].findChild("em") is None or INTERVAL not in self.feedListTime[idx].findChild("em").text:
                 continue
             result = re.findall(PATTERN[self.topic], str(feed))
             if len(result) == 0:
@@ -56,14 +56,16 @@ class BBS1pointDataFetcher(DataFetcherBase):
         self.feedList = soup.findAll("th",attrs={"class":"common"})
         self.feedListTime = soup.findAll("td",attrs={"class":"by"})
         if len(self.feedList) == 0:
-            
+            print("no feed list")
             return False
         feed = self.feedList[0]
         feed_title = feed.findAll("a", {"class": "s xst"})
         if len(feed_title) != 1:
+            print("no feed title")
             return False
         result = re.findall(PATTERN[self.topic], str(feed))
         if len(result) != 1:
+            print("regex wrong")
             return False
         return True
 

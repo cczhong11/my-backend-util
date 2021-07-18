@@ -1,0 +1,1 @@
+python /Users/tczhong/Dropbox/TCCode/script/ospy/backup_dir.py --src /Users/tczhong/Dropbox/TCCode/all_in_one_backend --dst ubuntu@44.232.253.221:~/all_in_one_backend
