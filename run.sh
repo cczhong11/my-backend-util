@@ -1,0 +1,1 @@
+python3.7 /home/ubuntu/all_in_one_backend/cron_1point3acres.py

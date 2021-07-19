@@ -56,6 +56,8 @@ class BBS1pointDataFetcher(DataFetcherBase):
         self.feedList = soup.findAll("th",attrs={"class":"common"})
         self.feedListTime = soup.findAll("td",attrs={"class":"by"})
         if len(self.feedList) == 0:
+            print(self.header)
+            print(soup)
             print("no feed list")
             return False
         feed = self.feedList[0]
