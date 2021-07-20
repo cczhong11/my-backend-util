@@ -1,3 +1,5 @@
 {
-    "data_main_path":""
+    "data_main_path":"",
+    "log_path":"/home/tczhong/log/all_in_one.log",
+    "mac_log_path":"/Users/tczhong/Dropbox/TCCode/all_in_one_backend/log.log"
 }

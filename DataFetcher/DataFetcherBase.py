@@ -1,5 +1,5 @@
 class DataFetcherBase(object):
-    def __init__(self, cookie, run_feq="1h", enable=True):
+    def __init__(self, cookie="", run_feq="1h", enable=True):
         self.enable = enable
         self.run_feq = run_feq
         self.cookie = cookie

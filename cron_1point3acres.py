@@ -2,7 +2,9 @@ from DataPusher.TelegramPush import TelegramPush
 from constant import PATH
 from DataFetcher.BBS1pointDataFetcher import BBS1pointDataFetcher
 import json
+import sys
 import os
+from log_util import logger
 api = {}
 with open(f"{PATH}/key.json") as f:
     api = json.load(f)
@@ -12,14 +14,12 @@ def run():
     # run health check
     job = BBS1pointDataFetcher(f"{PATH}/cookie/1point3acres.cookie", 'job')
     if not job.health_check():
-        if not os.path.exists(f"{PATH}/1pointError"):
-            bot.push_data("HEALTH check wrong for 1point3acres","67424809")
-            os.system(f"touch {PATH}/1pointError")
-        raise Exception("Job check failed")
+        logger.exception("Job check failed")
+        sys.exit(1)
     application = BBS1pointDataFetcher(f"{PATH}/cookie/1point3acres.cookie", 'application')
     if not application.health_check():
-        raise Exception("application check failed")
-    
+        logger.exception("Job check failed")
+        sys.exit(1)
     # get data 
     
     jobs = job.get_data()
@@ -41,4 +41,7 @@ def run():
         bot.push_data(feed,"@usgradapplication")
         
 if __name__ == '__main__':
-    run()
+    try:
+        run()
+    except Exception as e:
+        logger.exception(str(e))

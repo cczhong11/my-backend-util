@@ -1,5 +1,6 @@
 from .DataPusherBase import DataPusherBase
 from telegram import Bot 
+from log_util import logger
 
 class TelegramPush(DataPusherBase):
     def __init__(self, api, debug=False):
@@ -11,6 +12,7 @@ class TelegramPush(DataPusherBase):
             print(f"send {dst}: {data}")
             return {}
         self.bot.send_message(dst, data)
+        logger.info(f"send {dst}: {data}")
         return {"result":"success"}
     
     

@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from .DataFetcherBase import DataFetcherBase
 from web_util import parse_curl
 import re
-INTERVAL = "秒"
+INTERVAL = "分钟"
 PATTERN = {
     "job": r'<u><b><font color=\"green\">(.*?)</font><font color=\"#00B2E8\">(.*?)</font></b>@<b><font color=\"#FF6600\">(.*?)</font></b></u>.*<b>\[<font color=\"purple\">(.*?)</font>@<font color=\"brown\">(.*?)</font>\] (.*)</b>(.*)\n',
     "application": r'<font color=\"#666\">(.*?)</font>.<font color=\"blue\">(.*?)</font>.<font color=\"black\"><b>(.*?)</b>\]</font>\[<font color=\"#F60\"><b>(.*?)</b></font>@<font color=\"#00B2E8\">(.*?)</font>\]</u> - <font color=\"brown\">(.*?)</font> - <font color=\"green\">(.*?)</font><font color=\"purple\">(.*?)</font>,<font color=\"hotpink\">.*</font><font color=\"brown\">.*</font>'
