@@ -35,7 +35,8 @@ class BBS1pointDataFetcher(DataFetcherBase):
             feedTitle = rs[0]
             feedUrl = feedTitle.attrs["href"]
             feedTitle = feedTitle.text
-            if self.feedListTime[idx].findChild("em") is None or INTERVAL not in self.feedListTime[idx].findChild("em").text:
+            
+            if feed.findChild("td", attrs={"class": "by"}) is None or INTERVAL not in feed.findChild("td", attrs={"class": "by"}).text:
                 continue
             result = re.findall(PATTERN[self.topic], str(feed))
             if len(result) == 0:
@@ -53,11 +54,11 @@ class BBS1pointDataFetcher(DataFetcherBase):
     def health_check(self):
         result = requests.get(HEALTHCHECKURL[self.topic], headers=self.header).content
         soup = BeautifulSoup(result, "lxml")
-        self.feedList = soup.findAll("th",attrs={"class":"common"})
-        self.feedListTime = soup.findAll("td",attrs={"class":"by"})
+        self.feedList = soup.findAll("tbody",id=lambda x: x and x.startswith('normalthread_'))
+
         if len(self.feedList) == 0:
-            print(self.header)
-            print(soup)
+            #print(self.header)
+            #print(soup)
             print("no feed list")
             return False
         feed = self.feedList[0]

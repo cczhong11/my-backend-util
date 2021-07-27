@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-from DataFetcherBase import DataFetcherBase
+from .DataFetcherBase import DataFetcherBase
 from web_util import parse_curl
 import re
 
@@ -40,7 +40,7 @@ class DoubanFetcher(DataFetcherBase):
             rating_nums = rating[0].text
         feedRes['href'] = href.get("href")
         feedRes['title'] = href.text
-        feedRes['rating'] = rating_nums
+        feedRes['rating'] = float(rating_nums)
         return feedRes
         
      
