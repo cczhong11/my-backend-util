@@ -3,3 +3,7 @@ requests>=2.24.0
 lxml>=4.3.4
 python-telegram-bot>=12.3.0
 notion-client>=0.4.0
+google-api-python-client>=1.7.11
+oauth2client>=4.1.3
+gspread>=3.6.0
+git+https://github.com/Linusp/python-inoreader@master#egg=inoreader

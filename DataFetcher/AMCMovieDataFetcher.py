@@ -15,6 +15,8 @@ class AMCMovieDataFetcher(DataFetcherBase):
         rs = {}
         movie_list = []
         for movie in self.data:
+            if movie.get("genre","") == "":
+                continue
             movie_list.append({"name":movie.get("name",""),"genre":movie.get("genre",""),"imdb":movie.get("imdbId",""),"url":movie.get("websiteUrl","")})
         rs['data'] = movie_list
         return rs
