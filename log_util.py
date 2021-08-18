@@ -3,6 +3,11 @@ import json
 from constant import PATH
 import os
 from web_util import read_json_file
+logging.getLogger('boto3').setLevel(logging.CRITICAL)
+logging.getLogger('botocore').setLevel(logging.CRITICAL)
+logging.getLogger('nose').setLevel(logging.CRITICAL)
+logging.getLogger('s3transfer').setLevel(logging.CRITICAL) 
+
 config = read_json_file(f"{PATH}/config.json")
 os_name = os.uname().nodename
 config_path = "log_path"

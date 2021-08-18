@@ -21,7 +21,7 @@ def run():
     s3 = AWSS3DataWriter("rss-ztc")
     if not news.health_check():
         logger.exception("36kr health check failed")
-    rss_writer = RSSWriter(config[config_path],"36kr must read","https://36kr.com/topics")
+    rss_writer = RSSWriter(config[config_path],"36kr must read","https://36kr.com/topics", "36kr must read articles daily and weekly")
     data = news.get_data()
    
     for feed in data["data"]:
