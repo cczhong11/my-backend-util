@@ -13,7 +13,10 @@ class RSSWriter(DataWriterBase):
         self.fg.link(href=rss_link)
         self.fg.language("CN")
         self.fg.description(rss_description)
-    
+        if "podcast" in rss_description:
+            self.fg.load_extension('podcast')
+            self.fg.podcast.itunes_category('Arts', 'Books')
+            
     def add_feed(self, title, link, content,pubdate):
         fe = self.fg.add_entry()
         fe.title(title)
@@ -21,6 +24,15 @@ class RSSWriter(DataWriterBase):
         fe.content(content)
         fe.pubDate(pubdate)
     
+    def add_podcast(self, title, link, pubdate):
+        fe = self.fg.add_entry()
+        fe.id(link)
+        filename = title.split('.')[0]
+        filename = filename.split('/')[-1]
+        fe.title(filename)
+        fe.description(title)
+        fe.enclosure(link, 0, 'audio/mpeg')
+        
     def write_data(self, path, data):
         self.fg.rss_file(f"{self.dst_folder}/{path}")
         

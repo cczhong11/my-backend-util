@@ -1,23 +1,21 @@
 import requests
 from bs4 import BeautifulSoup
-from .DataFetcherBase import DataFetcherBase
+from .DataReaderBase import DataReaderBase
 from web_util import parse_curl
 import re
 import boto3
 
 
 
-class AWSS3DataFetcher(DataFetcherBase):
-    def __init__(self, cookie, bucket, run_feq="1h",enable=True):
+class AWSS3DataReader(DataReaderBase):
+    def __init__(self, bucket):
         self.bucket = bucket
         self.s3_client = boto3.client('s3')
-        super(AWSS3DataFetcher, self).__init__(cookie, run_feq, enable)
+        super(AWSS3DataReader, self).__init__()
+
     
-    def load_cookie(self):
-        pass
-    
-    def get_data(self, path, subfix=""):
-        content = self.s3_client.list_objects_v2(Bucket=self.bucket, Prefix=path, MaxKeys=50)
+    def get_data(self, path, subfix="", max_keys=50):
+        content = self.s3_client.list_objects_v2(Bucket=self.bucket, Prefix=path, MaxKeys=max_keys)
         rs = []
         for item in content['Contents']:
             if item['Size'] == 0:

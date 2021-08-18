@@ -15,10 +15,13 @@ os_name = os.uname().nodename
 config_path = "rss_path"
 if "MacBook" in os_name:
     config_path = "mac_rss_path"
+api = read_json_file(f"{PATH}/key.json")
+bucket = api["s3_rss_bucket"]
+
 
 def run():
     news = News36krDataFetcher("","")
-    s3 = AWSS3DataWriter("rss-ztc")
+    s3 = AWSS3DataWriter(bucket)
     if not news.health_check():
         logger.exception("36kr health check failed")
     rss_writer = RSSWriter(config[config_path],"36kr must read","https://36kr.com/topics", "36kr must read articles daily and weekly")
