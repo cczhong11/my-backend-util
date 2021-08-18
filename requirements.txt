@@ -7,3 +7,5 @@ google-api-python-client>=1.7.11
 oauth2client>=4.1.3
 gspread>=3.6.0
 git+https://github.com/Linusp/python-inoreader@master#egg=inoreader
+feedgen>=0.9.0
+boto3>=1.18.0

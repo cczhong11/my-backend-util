@@ -5,5 +5,5 @@ class DataWriterBase(object):
     def write_data(self, path, data):
         return 0
 
-    def health_check(self):
-        pass
+    def health_check(self)->bool:
+        return True

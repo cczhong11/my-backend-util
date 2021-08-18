@@ -2,7 +2,7 @@ from .DataReaderBase import DataReaderBase
 import os
 import web_util
 
-class FileReader(DataReaderBase):
+class FileDataReader(DataReaderBase):
     def __init__(self, folder):
         self.folder = folder
     
@@ -25,14 +25,12 @@ class FileReader(DataReaderBase):
         for item in os.listdir(absolute_path):
             if "9999" in item:
                 continue
-            if "read" in sub_folder:
-                rs.append({'name':item})
-                continue
-            json_obj = web_util.read_json_file(f"{absolute_path}/{item}")
-            if "latlng" in json_obj:
-                rs.append({'name': item, 'latlng': json_obj['latlng']})
-            else:
-                rs.append({'name': item})
+            if ".json" in item:
+                json_obj = web_util.read_json_file(f"{absolute_path}/{item}")
+                if "latlng" in json_obj:
+                    rs.append({'name': item, 'latlng': json_obj['latlng']})
+                    continue
+            rs.append({'name': item})
         return rs
     
     def get_latest_file(self, sub_folder):

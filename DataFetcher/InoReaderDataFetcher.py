@@ -27,7 +27,7 @@ class InoReaderDataFetcher(DataFetcherBase):
         for article in self.articles:
             if "user/1004680968/label/让自己开心一点" in article.categories:
                 starred_hahaha.append(article)
-        self.add_tag(starred_hahaha, "user/-/label/hahaha")
+        self.add_tag(starred_hahaha, "hahaha")
         self.remove_tag(starred_hahaha, "user/-/state/com.google/starred")
         pic = []
         for article in starred_hahaha:

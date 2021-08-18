@@ -22,9 +22,12 @@ def run():
     
     # send data    
     for pic in pics:
-        logger.info(pic)
-        bot.push_picture(pic,"@funnypicdaily")
-        
+        try:
+            logger.info(pic)
+            bot.push_picture(pic,"@funnypicdaily")
+        except Exception as e:
+            logger.warn(e)
+            
 if __name__ == '__main__':
     try:
         run()
