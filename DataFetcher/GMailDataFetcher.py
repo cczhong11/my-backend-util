@@ -15,12 +15,15 @@ SCOPES = 'https://www.googleapis.com/auth/gmail.readonly'
 
 
 class EmailType(Enum):
-    CHASE = 1
-    DISCOVER = 2
+    CHASE = "no.reply.alerts@chase.com"
+    DISCOVER = "discover@services.discover.com"
     #AMEX = 3
     #VENMO = 4
-
-
+class NewsLetterType(Enum):
+    TECHCRUNCH = "newsletter@techcrunch.com"
+    DATASHEET = "fortune@newsletter.fortune.com"
+    HACKERNEWS = "kale@hackernewsletter.com"
+    INFORMATION = "hello@theinformation.com"
 class GMailDataFetcher(DataFetcherBase):
     def __init__(self, secret_file, credentials_file, run_feq="1h", enable=True):
         self.header = {}
@@ -55,18 +58,13 @@ class GMailDataFetcher(DataFetcherBase):
                 response = self.service.users().messages().list(userId='me',
                                                                 q=self.query, pageToken=page_token).execute()
                 messages.extend(response['messages'])
-            print(len(messages))
+            
             return messages
         except Exception as e:
             print(e)
 
     def set_sender(self, sender):
-        mail = ""
-        if sender == EmailType.CHASE:
-            mail = "no.reply.alerts@chase.com"
-        elif sender == EmailType.DISCOVER:
-            mail = "discover@services.discover.com"
-        self.query += f"from:({mail}) "
+        self.query += f"from:({sender.value}) "
 
     def set_time(self, begin, end):
         self.query += f"after:{begin} before:{end} "
@@ -88,9 +86,35 @@ class GMailDataFetcher(DataFetcherBase):
                 result.append(self.analyze_chase(mess))
             if email_type == EmailType.DISCOVER:
                 result.append(self.analyze_discover(mess))
+            else:
+                result.append(self.analyze_general(mess))
         # filter none
         return result
 
+    def analyze_general(self, message):
+        if "payload" not in message:
+            return
+        # decode base64 data
+        
+        received = ""
+        url = "https://www.tczhong.com"
+        title = ""
+        for item in message["payload"]["headers"]:
+            if item["name"] == "X-Received":
+                received = item["value"].split(";")[1].strip()
+            if item["name"] == "Subject":
+                title = item["value"]
+        if "parts" not in message["payload"]:
+            data = [message["payload"]]
+        else:
+            data = message["payload"]["parts"]
+        rs = ""
+        for p in data:
+            data = p["body"]["data"]
+            content = base64.urlsafe_b64decode(data).decode("ISO-8859-1")
+            rs+= content.replace("â","'")
+        return {"title":title,"link":url,"content": rs,"publishTime":received}
+        
     def analyze_discover(self, message):
         if "payload" not in message:
             return
