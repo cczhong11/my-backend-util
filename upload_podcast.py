@@ -7,7 +7,7 @@ import pickle
 from datetime import datetime
 from web_util import read_json_file
 import pytz
-need_list = ["学会提问"]
+need_list = ["弗兰克尔自传"]
 SUBFIX = ".mp3"
 MOBI = "/Users/tczhong/Documents/mobi2mp3"
 

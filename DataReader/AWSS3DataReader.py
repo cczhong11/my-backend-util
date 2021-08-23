@@ -23,7 +23,7 @@ class AWSS3DataReader(DataReaderBase):
             if subfix != "" and subfix not in item['Key']:
                 continue
             rs.append(item)
-        return rs
+        return sorted(rs, key=lambda x:x['LastModified'])
      
     def health_check(self):
         content = self.s3_client.list_objects_v2(Bucket=self.bucket, MaxKeys=10)
@@ -32,3 +32,5 @@ class AWSS3DataReader(DataReaderBase):
         return True
 
 
+a = AWSS3DataReader("rss-ztc")
+a.get_data("book",'.mp3')

@@ -5,7 +5,6 @@ from log_util import logger
 import os
 from constant import PATH
 import urllib.parse
-from datetime import datetime
 from web_util import read_json_file
 import pytz
 

@@ -31,7 +31,7 @@ class FileDataReader(DataReaderBase):
                     rs.append({'name': item, 'latlng': json_obj['latlng']})
                     continue
             rs.append({'name': item})
-        return sorted(rs, lambda x: x['name'])
+        return sorted(rs, key=lambda x: x['name'])
     
     def get_latest_file(self, sub_folder):
         rs = self.get_list(sub_folder)
