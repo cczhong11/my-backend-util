@@ -71,7 +71,7 @@ class NotionPush(DataPusherBase):
             for r in result['results']:
                 try:
                     rs[r['properties']['Title']['title']
-                        [0]['text']['content']] = r['id']
+                        [0]['text']['content']] = (r['id'],r['properties'].get("douban",{}).get("number",-1))
                 except:
                     continue
         if topic == 'michelin':

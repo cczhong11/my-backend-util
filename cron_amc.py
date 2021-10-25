@@ -1,6 +1,6 @@
 from DataFetcher.AMCMovieDataFetcher import AMCMovieDataFetcher
 from DataFetcher.DoubanFetcher import DoubanFetcher
-from DataPusher.NotionPush import NotionPush
+from DataPusher.NotionPush import NotionPush, notion_util
 
 from web_util import read_json_file
 from constant import PATH
@@ -21,16 +21,22 @@ def run():
     # get data
     data = amc.get_data("")
     current_data = notion_push.get_current_data("AMC")
+    current_movie = set()
     for movie in data['data']:
-        if movie['name'] in current_data:
+        current_movie.add(movie['name'])
+        if movie['name'] in current_data and current_data[movie['name']][1]!= -1:
             continue
         douban_info = douban.get_data(movie['imdb'])
         movie['douban'] = douban_info.get('rating',-1)
         movie['douban_url'] = douban_info.get('href',None)
         movie['chinese_name'] = douban_info.get('title',"")
         if movie['name'] not in current_data:
-            print(movie)
             notion_push.push_data(movie,'AMC')
+        else:
+            notion_push.update_page(current_data[movie['name']][0],properties={"douban":notion_util(movie['douban'], 'number')})
+    for m in current_data:
+        if m not in current_movie:
+             notion_push.update_page(current_data[m][0], archived=True)
     
 if __name__ == '__main__':
     run()

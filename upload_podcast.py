@@ -7,9 +7,9 @@ import pickle
 from datetime import datetime
 from web_util import read_json_file
 import pytz
-need_list = ["弗兰克尔自传"]
+need_list = ["戒律全球恋爱约会圣经"]
 SUBFIX = ".mp3"
-MOBI = "/Users/tczhong/Documents/mobi2mp3"
+MOBI = "/Users/tczhong/Documents/mobi2mp3/mp3"
 
 
 def check_filename(filename, need_list):
@@ -29,6 +29,6 @@ def run():
         if check_filename(filename, need_list) and SUBFIX in filename:
             s3.write_data("book", os.path.join(MOBI, filename))
             logger.info(f"upload {filename}")
-            
+
 if __name__ == '__main__':
     run()

@@ -14,6 +14,8 @@ os_name = os.uname().nodename
 config_path = "rss_path"
 if "MacBook" in os_name:
     config_path = "mac_rss_path"
+if "mbp" in os_name:
+    config_path = "darwin_rss_path"
 api = read_json_file(f"{PATH}/key.json")
 bucket = api["s3_rss_bucket"]
 
