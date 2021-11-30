@@ -26,7 +26,7 @@ def run():
     if not s3_reader.health_check() or not s3_writer.health_check():
         logger.exception("aws health check failed")
     rss_writer = RSSWriter(config[config_path],"my book to listen","https://study.tczhong.com", "podcast: my book to listen")
-    data = s3_reader.get_data('book', '.mp3')
+    data = s3_reader.get_data('book', '.mp3',5000)
     for feed in data:
         link = f"https://{bucket}.s3.amazonaws.com/{urllib.parse.quote(feed['Key'])}"
         rss_writer.add_podcast(feed['Key'],link,feed['LastModified'])
