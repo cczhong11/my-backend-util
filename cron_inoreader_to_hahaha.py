@@ -26,22 +26,20 @@ def run():
     )
     sheet.clean_data()
 
-    """
     if not hahaha.health_check():
         logger.exception("hahaha check failed")
         sys.exit(1)
-    
-    # get data 
+
+    # get data
     pics = hahaha.starrd_hahaha_process()
-    
-    # send data    
+
+    # send data
     for pic in pics:
         try:
             logger.info(pic)
-            bot.push_picture(pic,"@funnypicdaily")
+            bot.push_picture(pic, "@funnypicdaily")
         except Exception as e:
             logger.warn(e)
-    """
 
 
 if __name__ == "__main__":

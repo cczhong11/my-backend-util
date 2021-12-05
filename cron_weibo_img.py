@@ -12,7 +12,7 @@ def run():
         cookie = f.read()
     wb = WeiboDataFetcher(cookie)
     path = wb.get_data()
-    path = "/Users/tianchenzhong/data/weibo//表情包_2021_11_28_2021_12_02.md"
+
     md = MarkdownImgDownloader(path, BQB_PATH)
     md.write_data()
 

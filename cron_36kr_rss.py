@@ -20,16 +20,30 @@ bucket = api["s3_rss_bucket"]
 
 
 def run():
-    news = News36krDataFetcher("","")
+    news = News36krDataFetcher("", "")
     s3 = AWSS3DataWriter(bucket)
     if not news.health_check():
         logger.exception("36kr health check failed")
-    rss_writer = RSSWriter(config[config_path],"36kr must read","https://36kr.com/topics", "36kr must read articles daily and weekly")
+    rss_writer = RSSWriter(
+        config[config_path],
+        "36kr must read",
+        "https://36kr.com/topics",
+        "36kr must read articles daily and weekly",
+    )
     data = news.get_data()
-   
+
     for feed in data["data"]:
-        rss_writer.add_feed(feed['title'],feed['link'],feed['content'],datetime.fromtimestamp(feed['publishTime']/1000, pytz.timezone("Asia/Shanghai")))
-    rss_writer.write_data("36kr.xml","")
+        rss_writer.add_feed(
+            feed["title"],
+            feed["link"],
+            feed["content"],
+            datetime.fromtimestamp(
+                feed["publishTime"] / 1000, pytz.timezone("Asia/Shanghai")
+            ),
+        )
+    rss_writer.write_data("36kr.xml", "")
     s3.write_data("news", os.path.join(config[config_path], "36kr.xml"))
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     run()

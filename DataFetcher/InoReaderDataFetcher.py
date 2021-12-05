@@ -4,21 +4,22 @@ from .DataFetcherBase import DataFetcherBase
 from inoreader.main import get_client
 import re
 
+
 class InoReaderDataFetcher(DataFetcherBase):
-    def __init__(self, cookie, topic, run_feq="1h",enable=True):
+    def __init__(self, cookie, topic, run_feq="1h", enable=True):
         self.topic = topic
         self.header = {}
         self.client = get_client(cookie)
         self.articles = []
         super(InoReaderDataFetcher, self).__init__(cookie, run_feq, enable)
-    
+
     def load_cookie(self):
         pass
-    
+
     def get_data(self, tag):
         filter_articles = []
         for article in self.articles:
-            if tag in article.categories: 
+            if tag in article.categories:
                 filter_articles.append(article)
         return filter_articles
 
@@ -31,21 +32,23 @@ class InoReaderDataFetcher(DataFetcherBase):
         self.remove_tag(starred_hahaha, "user/-/state/com.google/starred")
         pic = []
         for article in starred_hahaha:
-            soup = BeautifulSoup(article.content)
+            soup = BeautifulSoup(article.content, "lxml")
             for img in soup.select("img"):
                 pic.append(img.get("src"))
         return pic
-    
+
     def remove_tag(self, articles, tag):
         if "starred" in tag:
             self.client.remove_starred(articles)
-    
-    def add_tag(self, articles,tag):
-        self.client.add_tag(articles,tag)
-    
+
+    def add_tag(self, articles, tag):
+        self.client.add_tag(articles, tag)
+
     def health_check(self):
-        if self.topic == 'star':
-            articles_gen = self.client.get_stream_contents("user/-/state/com.google/starred")
+        if self.topic == "star":
+            articles_gen = self.client.get_stream_contents(
+                "user/-/state/com.google/starred"
+            )
         else:
             articles_gen = self.client.fetch_articles(tags=[self.topic])
         for article in articles_gen:
@@ -54,4 +57,3 @@ class InoReaderDataFetcher(DataFetcherBase):
             print("no feed list")
             return False
         return True
-
