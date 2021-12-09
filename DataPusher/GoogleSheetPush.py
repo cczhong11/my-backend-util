@@ -27,19 +27,46 @@ class GoogleSheetPush(DataPusherBase):
         logger.info(f"send: {data}")
         return {"result": "success"}
 
-    def clean_data(self):
-
+    def clean_data(self, items=None):
+        data = []
         if self.topic == "sheet_clean_hahaha":
-            data = []
+
             for line in self.all_data:
                 if line[2] == "让自己开心一点":
+                    continue
+                if len(line[0]) == 0:
+                    continue
+                data.append(line)
+        if self.topic == "sheet_clean_tag":
+            links = set()
+            print(items)
+            if not isinstance(items, dict):
+                return
+            for tag, olinks in items.items():
+                for l in olinks:
+                    links.add(l)
+            print(links)
+            for line in self.all_data:
+                if line[3] in links:
+                    continue
+                if len(line[0]) == 0:
                     continue
                 data.append(line)
         if self.debug:
             print(data)
             return
         self.sheet.clear()
-        self.sheet.update("A2", data)
+        self.sheet.update("A1", data)
+
+    def get_tags(self):
+        rs = {}
+        for line in self.all_data:
+            if len(line[0]) == 0 or len(line[4]) == 0:
+                continue
+            if line[4] not in rs:
+                rs[line[4]] = []
+            rs[line[4]].append(line[3])  # use link
+        return rs
 
     def health_check(self):
         return True

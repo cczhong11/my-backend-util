@@ -11,6 +11,7 @@ class InoReaderDataFetcher(DataFetcherBase):
         self.header = {}
         self.client = get_client(cookie)
         self.articles = []
+        self.link_to_articles = {}
         super(InoReaderDataFetcher, self).__init__(cookie, run_feq, enable)
 
     def load_cookie(self):
@@ -22,6 +23,15 @@ class InoReaderDataFetcher(DataFetcherBase):
             if tag in article.categories:
                 filter_articles.append(article)
         return filter_articles
+
+    def find_articles_from_list(self, items):
+        new_rs = {}
+        for tag in items:
+            new_rs[tag] = []
+            for link in items[tag]:
+                if link in self.link_to_articles:
+                    new_rs[tag].append(self.link_to_articles[link])
+        return new_rs  # tag to articles
 
     def starrd_hahaha_process(self):
         starred_hahaha = []
@@ -41,17 +51,24 @@ class InoReaderDataFetcher(DataFetcherBase):
         if "starred" in tag:
             self.client.remove_starred(articles)
 
+    def add_tags(self, items):
+        for tag, articles in items.items():
+            self.add_tag(articles, tag)
+            self.remove_tag(articles, "starred")
+
     def add_tag(self, articles, tag):
         self.client.add_tag(articles, tag)
 
     def health_check(self):
-        if self.topic == "star":
+        if self.topic == "star" or "sheet_clean" in self.topic:
             articles_gen = self.client.get_stream_contents(
                 "user/-/state/com.google/starred"
             )
         else:
             articles_gen = self.client.fetch_articles(tags=[self.topic])
+
         for article in articles_gen:
+            self.link_to_articles[article.link] = article
             self.articles.append(article)
         if len(self.articles) == 0:
             print("no feed list")

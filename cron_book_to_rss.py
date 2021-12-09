@@ -33,7 +33,6 @@ def run():
     )
     data = s3_reader.get_data("book", ".mp3", 5000)
     for feed in data:
-        print(feed["Key"])
         link = f"https://{bucket}.s3.amazonaws.com/{urllib.parse.quote(feed['Key'])}"
         rss_writer.add_podcast(feed["Key"], link, feed["LastModified"])
     rss_writer.write_data("book_podcast.xml", "")

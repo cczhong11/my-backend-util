@@ -26,9 +26,9 @@ class News36krDataFetcher(DataFetcherBase):
         res = res[0]
         res = json.loads(res)
         content = str(res.get("data", {}).get("widgetContent", ""))
-        return content.replace("\xa0", " ").replace("\x08", ""), res.get(
-            "data", {}
-        ).get("publishTime", 0)
+        return content.replace("\xa0", " ").replace("\x08", "").replace(
+            "\\t", ""
+        ), res.get("data", {}).get("publishTime", 0)
 
     @lru_cache(128)
     def process_topic(self, link):
