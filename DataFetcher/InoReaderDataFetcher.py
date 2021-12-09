@@ -4,6 +4,8 @@ from .DataFetcherBase import DataFetcherBase
 from inoreader.main import get_client
 import re
 
+# install git@github.com:cczhong11/python-inoreader.git
+
 
 class InoReaderDataFetcher(DataFetcherBase):
     def __init__(self, cookie, topic, run_feq="1h", enable=True):
@@ -43,6 +45,12 @@ class InoReaderDataFetcher(DataFetcherBase):
         pic = []
         for article in starred_hahaha:
             soup = BeautifulSoup(article.content, "lxml")
+            print(article.content)
+            link = soup.select("a")[0].get("href")
+            print(link)
+            if "gif" in link:
+                pic.append(link)
+                continue
             for img in soup.select("img"):
                 pic.append(img.get("src"))
         return pic

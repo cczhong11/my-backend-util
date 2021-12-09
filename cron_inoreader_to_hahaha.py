@@ -39,7 +39,7 @@ def run():
             logger.info(pic)
             bot.push_picture(pic, "@funnypicdaily")
         except Exception as e:
-            logger.warn(e)
+            logger.warning(e)
 
 
 if __name__ == "__main__":
