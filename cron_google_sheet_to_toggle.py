@@ -35,7 +35,7 @@ def run():
     shortcodes = get_shortcodes(Gsheet)
 
     event = get_event(Gsheet)
-    toggle = TogglePush(shortcodes, api["toggle_api"], project_map, True)
+    toggle = TogglePush(shortcodes, api["toggle_api"], project_map )
     toggle.push_data(event)
 
 
