@@ -11,7 +11,7 @@ import sys
 
 today = time_util.str_time(time_util.get_current_date(), "%Y/%m/%d")
 yesterday = time_util.str_time(time_util.get_yesterday(), "%Y/%m/%d")
-yesterday = "2022/01/01"
+yesterday = "2022/01/24"
 
 
 def run():
@@ -35,8 +35,7 @@ def run():
 
     # get data
     for _, member in EmailType.__members__.items():
-        if member != EmailType.BOA:
-            continue
+
         gmail.reset_query()
         gmail.set_sender(member)
         gmail.set_time(yesterday, today)
