@@ -39,13 +39,12 @@ class GoogleSheetPush(DataPusherBase):
                 data.append(line)
         if self.topic == "sheet_clean_tag":
             links = set()
-            print(items)
             if not isinstance(items, dict):
                 return
             for tag, olinks in items.items():
                 for l in olinks:
                     links.add(l)
-            print(links)
+
             for line in self.all_data:
                 if line[3] in links:
                     continue

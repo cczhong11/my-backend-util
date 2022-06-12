@@ -183,7 +183,7 @@ class GMailDataFetcher(DataFetcherBase):
                     Merchant = result[i + 1].text
                 if r.text == "Amount":
                     money = result[i + 1].text[1:]
-            if Merchant == "":
+            if Merchant == "" or len(money) == 0:
                 continue
             return (float(money), Merchant, date)
         return None

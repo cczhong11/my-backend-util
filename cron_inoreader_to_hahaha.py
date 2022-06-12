@@ -24,7 +24,6 @@ def run():
         None,
         False,
     )
-    sheet.clean_data()
 
     if not hahaha.health_check():
         logger.exception("hahaha check failed")
@@ -40,6 +39,7 @@ def run():
             bot.push_picture(pic, "@funnypicdaily")
         except Exception as e:
             logger.warning(e)
+    sheet.clean_data()
 
 
 if __name__ == "__main__":

@@ -11,7 +11,7 @@ import sys
 
 today = time_util.str_time(time_util.get_current_date(), "%Y/%m/%d")
 yesterday = time_util.str_time(time_util.get_yesterday(), "%Y/%m/%d")
-yesterday = "2022/01/24"
+# yesterday = "2022/04/01"
 
 
 def run():
@@ -42,7 +42,7 @@ def run():
         rs = gmail.get_data()
         analyze_rs = gmail.analyze(member, rs)
         for r in analyze_rs:
-            print(r)
+
             if r is None or len(r) != 3:
                 continue
             sheet.push_data(r)
