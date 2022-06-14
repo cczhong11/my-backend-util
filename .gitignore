@@ -7,3 +7,5 @@ key.json
 cookie/
 data
 *.yaml
+build
+ztc_backend_util.egg-info
