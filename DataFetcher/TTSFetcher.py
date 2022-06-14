@@ -22,7 +22,7 @@ class Article:
         self.publish_time = None
         self.delimeter = "_"
 
-    def read_from_url(self):
+    def read_from_url(self, path):
 
         r = requests.get(self.url)
         rs = gne.extract(r.text)
@@ -34,7 +34,7 @@ class Article:
             logger.error("Error in reading from url: {}".format(self.url))
         nline = len(self.content.split("\n"))
         print(f"there are {nline} lines")
-        with open(f"{self.title}.txt", "w") as f:
+        with open(os.path.join(path, f"{self.title}.txt"), "w") as f:
             f.write(self.content)
 
     def to_tts(self, tts, path):
@@ -58,15 +58,15 @@ class Article:
         cmd = f"{FFMPEG} -f concat -safe 0 -i {os.path.join(path, tmp_file)} -c copy {os.path.join(path, new_file)} "
         os.system(cmd)
         for i in range(index):
-            os.remove(f"{self.title}{self.delimeter}{i}.mp3")
+            os.remove(os.path.join(path, f"{self.title}{self.delimeter}{i}.mp3"))
 
 
 class TTSFetcher(DataFetcherBase):
-    def __init__(self, cookie, url, path, enable=True):
-        self.url = url
+    def __init__(self, cookie, path, enable=True):
+
         self.path = path
         self.client = None
-
+        self.title = None
         super(TTSFetcher, self).__init__(cookie)
 
     def load_cookie(self):
@@ -76,9 +76,15 @@ class TTSFetcher(DataFetcherBase):
             audio_encoding=texttospeech.AudioEncoding.MP3
         )
 
-    def get_data(self):
-        article = Article(self.url)
-        article.read_from_url()
+    def current_title(self):
+        return self.title
+
+    def get_data(self, url):
+        article = Article(url)
+        article.read_from_url(self.path)
+        self.title = article.title
+        if os.path.exists(os.path.join(self.path, f"{article.title}.mp3")):
+            return
         article.to_tts(self.gTTS_text, self.path)
 
     def gTTS_text(self, text, lang, filename):
