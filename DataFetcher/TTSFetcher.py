@@ -10,7 +10,7 @@ import os
 
 MAX_LETTER = 200
 logger = logging.getLogger(__name__)
-FFMPEG = "/opt/homebrew/bin/ffmpeg"
+FFMPEG = "/usr/bin/ffmpeg"  # "/opt/homebrew/bin/ffmpeg"
 gne = GeneralNewsExtractor()
 
 
@@ -25,7 +25,7 @@ class Article:
     def read_from_url(self, path):
 
         r = requests.get(self.url)
-        rs = gne.extract(r.text)
+        rs = gne.extract(r.text, body_xpath='//div[@class="rich_media_area_primary"]')
         try:
             self.title = rs["title"]
             self.publish_time = rs["publish_time"]
@@ -54,9 +54,11 @@ class Article:
         new_file = f"{self.title}.mp3"
         with open(os.path.join(path, tmp_file), "w") as f:
             for i in range(index):
-                f.write(f"file {self.title}{self.delimeter}{i}.mp3\n")
+                f.write(f"file {path}/{self.title}{self.delimeter}{i}.mp3\n")
         cmd = f"{FFMPEG} -f concat -safe 0 -i {os.path.join(path, tmp_file)} -c copy {os.path.join(path, new_file)} "
-        os.system(cmd)
+        rs = os.system(cmd)
+        if rs != 0:
+            return
         for i in range(index):
             os.remove(os.path.join(path, f"{self.title}{self.delimeter}{i}.mp3"))
 

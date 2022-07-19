@@ -12,6 +12,7 @@ file_folder = {
     "DNG": "pic",
     "PNG": "pic",
     "HEIC": "pic",
+    "heic": "pic",
     "mp4": "video",
     "MP4": "video",
     "MOV": "video",
@@ -25,7 +26,7 @@ class DiskDataWriter(DataWriterBase):
         self.folder = folder
         self.dry_run = dry_run
 
-    def write_data_to_date_based_folder(self, filename, rename=""):
+    def write_data_to_date_based_folder(self, filename, rename="", food=False):
         stat = os.stat(filename)
         mt_time = datetime.datetime.fromtimestamp(stat.st_mtime)
         time_based_folder_name = mt_time.strftime("%Y_%m_%d")
@@ -34,9 +35,12 @@ class DiskDataWriter(DataWriterBase):
         if subfix not in file_folder:
             print(f"{filename} is not supported")
             return
+
         base_folder = Path(
             f"{self.folder}/{month_based_folder_name}/{time_based_folder_name}/{file_folder[subfix]}"
         )
+        if food:
+            base_folder = Path(f"{self.folder}/{time_based_folder_name}/")
         base_folder.mkdir(parents=True, exist_ok=True)
         single_file = filename.split("/")[-1]
         if len(rename) > 0:

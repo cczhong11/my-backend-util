@@ -58,6 +58,7 @@ class FileDataReader(DataReaderBase):
                 or ".dng" in item
                 or ".DNG" in item
                 or ".HEIC" in item
+                or ".heic" in item
             ):
                 rs.append({"name": os.path.join(absolute_path, item)})
         return sorted(rs, key=lambda x: x["name"])
