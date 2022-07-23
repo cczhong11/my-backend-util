@@ -3,6 +3,8 @@ from DataWriter.DataWriterBase import DataWriterBase
 import os
 import datetime
 import shutil
+import exifread
+from typing import Optional
 
 file_folder = {
     "jpg": "pic",
@@ -20,6 +22,17 @@ file_folder = {
 }
 
 
+def find_img_original_time(filename: str) -> Optional[datetime.datetime]:
+    with open(filename, "rb") as fh:
+        tags = exifread.process_file(fh, stop_tag="EXIF DateTimeOriginal")
+        dateTaken = tags.get("EXIF DateTimeOriginal", None)
+        if dateTaken:
+            dateTaken = datetime.datetime.strptime(
+                dateTaken.printable, "%Y:%m:%d %H:%M:%S"
+            )
+        return dateTaken
+
+
 class DiskDataWriter(DataWriterBase):
     def __init__(self, folder, dry_run=False):
         super(DiskDataWriter, self).__init__()
@@ -27,8 +40,10 @@ class DiskDataWriter(DataWriterBase):
         self.dry_run = dry_run
 
     def write_data_to_date_based_folder(self, filename, rename="", food=False):
-        stat = os.stat(filename)
-        mt_time = datetime.datetime.fromtimestamp(stat.st_mtime)
+        mt_time = find_img_original_time(filename)
+        if mt_time is None:
+            stat = os.stat(filename)
+            mt_time = datetime.datetime.fromtimestamp(stat.st_mtime)
         time_based_folder_name = mt_time.strftime("%Y_%m_%d")
         month_based_folder_name = mt_time.strftime("%Y_%m")
         subfix = filename.split(".")[-1]

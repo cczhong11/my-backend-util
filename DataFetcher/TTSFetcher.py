@@ -27,7 +27,7 @@ class Article:
         r = requests.get(self.url)
         rs = gne.extract(r.text, body_xpath='//div[@class="rich_media_area_primary"]')
         try:
-            self.title = rs["title"]
+            self.title = rs["title"].replace(" ", "_")
             self.publish_time = rs["publish_time"]
             self.content = rs["content"]
         except:
@@ -55,7 +55,8 @@ class Article:
         with open(os.path.join(path, tmp_file), "w") as f:
             for i in range(index):
                 f.write(f"file {path}/{self.title}{self.delimeter}{i}.mp3\n")
-        cmd = f"{FFMPEG} -f concat -safe 0 -i {os.path.join(path, tmp_file)} -c copy {os.path.join(path, new_file)} "
+        cmd = f'{FFMPEG} -f concat -safe 0 -i "{os.path.join(path, tmp_file)}" -c copy "{os.path.join(path, new_file)}"'
+        print(cmd)
         rs = os.system(cmd)
         if rs != 0:
             return

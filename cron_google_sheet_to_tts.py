@@ -15,7 +15,7 @@ with open(f"{PATH}/key.json") as f:
 def run():
     Gsheet = GoogleSheetReader(f"{PATH}/cookie/service_account.json", api["tts_sheet"])
     items = Gsheet.get_data("Sheet1")
-    tts = TTSFetcher(f"{PATH}/cookie/tts-google.json", f"{PATH}/data/tts/")
+    tts = TTSFetcher(f"{PATH}/cookie/tts-google.json", f"{PATH}/data/tts")
     s3 = AWSS3DataWriter("rss-ztc")
 
     data = []
