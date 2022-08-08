@@ -27,7 +27,6 @@ user_map = {
     "1974576991": "环球时报",
     "2286908003": "人民网",
     "1652811601": "喷嚏",
-    "2163127221": "LZ",
     "1799869881": "me",
     "5780439194": "表情包",
     "5700379397": "bqb",
@@ -70,7 +69,7 @@ class WeiboSpider(object):
         self.got_num = 0
         self.downlaod_bqb = True
         nowtime = datetime.now()  # datetime.strptime(config['since_date'],"%Y-%m-%d")
-        self.since_date = nowtime - timedelta(days=4)
+        self.since_date = nowtime - timedelta(days=20)
         self.end_date = datetime(
             nowtime.year, nowtime.month, nowtime.day
         )  # self.since_date+timedelta(days=1)#datetime.strptime(config['end_date'],"%Y-%m-%d")

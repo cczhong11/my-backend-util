@@ -13,6 +13,8 @@ logging.basicConfig()
 logging.root.setLevel(logging.INFO)
 # PATH = "/Volumes/BackupSSD/"  # "/Volumes/T7 Touch/orgranized photo"
 PATH = "/Volumes/T7 Touch/orgranized photo"
+if os.path.exists("/Volumes/BackupSSD/"):
+    PATH = "/Volumes/BackupSSD/"
 possible_path = [
     "/Volumes/POCKET2/DCIM/100MEDIA",
     "/Volumes/POCKET2/DCIM/101MEDIA",
@@ -21,7 +23,6 @@ possible_path = [
     "/Volumes/dji mini3/DCIM/100MEDIA",
     "/Volumes/eos rp/DCIM/100CANON",
     "/Volumes/eos rp/DCIM/101CANON",
-    "/Volumes/BackupSSD/iphone13/AnyTrans-Export-2022-07-07/My Photos",
     "/Volumes/T7 Touch/iphone13/AnyTrans-Export-2022-07-16(1)/My Photos/",
 ]
 prefix = {
