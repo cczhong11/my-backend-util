@@ -28,9 +28,11 @@ def run():
         sys.exit(1)
     tags = reader.get_tags()
     for t in tags:
+        print(t["name"])
         if "resource_" not in t["name"] and "area_" not in t["name"]:
             continue
         articles = reader.get_articles_from_tag(t["name"])
+        break
         sheet.write_tag_articles(t["name"], articles)
         logger.info("write tag %s", t["name"])
 

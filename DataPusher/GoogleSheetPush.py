@@ -6,8 +6,9 @@ from log_util import logger
 class GoogleSheetPush(DataPusherBase):
     def __init__(self, filename, sheet, topic, filter, debug=False):
         self.gc = gspread.service_account(filename)
-        self.sheet = self.gc.open_by_key(sheet).sheet1
-        self.all_data = self.sheet.get_all_values()
+        self.sheet = self.gc.open_by_key(sheet)
+        self.sheet1 = self.sheet.sheet1
+        self.all_data = self.sheet1.get_all_values()
         self.current_line = len(self.all_data) + 1
         self.topic = topic
         self.filter = filter
@@ -19,7 +20,7 @@ class GoogleSheetPush(DataPusherBase):
             return {}
         if self.topic == "money":
             money_type = self.filter.filter(data[1])
-            self.sheet.update(
+            self.sheet1.update(
                 f"A{self.current_line}:D{self.current_line}",
                 [[data[2], data[1], float(data[0]), money_type]],
             )
@@ -54,8 +55,8 @@ class GoogleSheetPush(DataPusherBase):
         if self.debug:
             print(data)
             return
-        self.sheet.clear()
-        self.sheet.update("A1", data)
+        self.sheet1.clear()
+        self.sheet1.update("A1", data)
 
     def get_tags(self):
         rs = {}
@@ -66,6 +67,18 @@ class GoogleSheetPush(DataPusherBase):
                 rs[line[4]] = []
             rs[line[4]].append(line[3])  # use link
         return rs
+
+    def write_tag_articles(self, tag, articles):
+        available_sheet = self.sheet.worksheets()
+        name_sheet = {s.title: s for s in available_sheet}
+        if tag not in name_sheet:
+            self.sheet.add_worksheet(title=tag, rows="100", cols="20")
+            name_sheet[tag] = self.sheet.worksheet(tag)
+        sheet = name_sheet[tag]
+        data = []
+        for a in articles:
+            data.append([a.id, a.title, a.link, a.published])
+        sheet.update("A1", data)
 
     def health_check(self):
         return True

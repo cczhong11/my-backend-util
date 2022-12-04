@@ -83,7 +83,7 @@ class InoReaderDataFetcher(DataFetcherBase):
                 "user/-/state/com.google/starred"
             )
         else:
-            articles_gen = self.client.fetch_articles(tags=[self.topic])
+            return True
 
         for article in articles_gen:
             self.link_to_articles[article.link] = article
