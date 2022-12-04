@@ -19,6 +19,8 @@ file_folder = {
     "MP4": "video",
     "MOV": "video",
     "mov": "video",
+    "AAC": "video",
+    "SRT": "video",
 }
 
 

@@ -1,3 +1,4 @@
+from genericpath import isdir
 from .DataReaderBase import DataReaderBase
 import os
 import web_util
@@ -39,14 +40,18 @@ class FileDataReader(DataReaderBase):
         rs = sorted(rs, key=lambda x: x["name"], reverse=True)
         return rs[0]["name"]
 
-    def get_img_list(self, sub_folder=None):
+    def get_img_list(self, sub_folder=None, set_absolute_path=None):
         rs = []
         if sub_folder is not None:
             absolute_path = f"{self.folder}/{sub_folder}"
         else:
             absolute_path = self.folder
+        # overwrite
+        if set_absolute_path:
+            absolute_path = set_absolute_path
         if not os.path.exists(absolute_path):
             return rs
+
         for item in os.listdir(absolute_path):
             if (
                 ".JPG" in item
@@ -61,19 +66,37 @@ class FileDataReader(DataReaderBase):
                 or ".heic" in item
             ):
                 rs.append({"name": os.path.join(absolute_path, item)})
+            if os.path.isdir(absolute_path + "/" + item):
+                new_rs = self.get_img_list(set_absolute_path=absolute_path + "/" + item)
+                rs.extend(new_rs)
         return sorted(rs, key=lambda x: x["name"])
 
-    def get_video_list(self, sub_folder=None):
+    def get_video_list(self, sub_folder=None, set_absolute_path=None):
         rs = []
         if sub_folder is not None:
             absolute_path = f"{self.folder}/{sub_folder}"
         else:
             absolute_path = self.folder
+        # overwrite
+        if set_absolute_path:
+            absolute_path = set_absolute_path
         if not os.path.exists(absolute_path):
             return rs
         for item in os.listdir(absolute_path):
-            if ".MP4" in item or ".mp4" in item or ".mov" in item or ".MOV" in item:
+            if (
+                ".MP4" in item
+                or ".mp4" in item
+                or ".mov" in item
+                or ".MOV" in item
+                or ".AAC" in item
+                or ".SRT" in item
+            ):
                 rs.append({"name": os.path.join(absolute_path, item)})
+            if os.path.isdir(absolute_path + "/" + item):
+                new_rs = self.get_video_list(
+                    set_absolute_path=absolute_path + "/" + item
+                )
+                rs.extend(new_rs)
         return sorted(rs, key=lambda x: x["name"])
 
     def health_check(self):

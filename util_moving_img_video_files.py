@@ -16,14 +16,15 @@ PATH = "/Volumes/T7 Touch/orgranized photo"
 if os.path.exists("/Volumes/BackupSSD/"):
     PATH = "/Volumes/BackupSSD/"
 possible_path = [
-    "/Volumes/POCKET2/DCIM/100MEDIA",
-    "/Volumes/POCKET2/DCIM/101MEDIA",
+    "/Volumes/POCKET2/DCIM/104MEDIA",
     "/Volumes/POCKET2/DCIM/102MEDIA",
+    "/Volumes/POCKET2/DCIM/103MEDIA",
     "/Volumes/dji/DCIM/101MEDIA",
     "/Volumes/dji mini3/DCIM/100MEDIA",
     "/Volumes/eos rp/DCIM/100CANON",
     "/Volumes/eos rp/DCIM/101CANON",
-    "/Volumes/T7 Touch/iphone13/AnyTrans-Export-2022-07-16(1)/My Photos/",
+    # "/Volumes/T7 Touch/iphone13/",
+    "/Volumes/Action3/DCIM/DJI_001/",
 ]
 prefix = {
     "/Volumes/POCKET2/DCIM/": "pocket2",
@@ -46,6 +47,7 @@ def move_volume(volume):
     img_file_list = fd.get_img_list()
 
     video_file_list = fd.get_video_list()
+
     for item in img_file_list:
         dw.write_data_to_date_based_folder(item["name"], file_prefix)
     for item in video_file_list:

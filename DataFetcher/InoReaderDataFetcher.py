@@ -26,6 +26,13 @@ class InoReaderDataFetcher(DataFetcherBase):
                 filter_articles.append(article)
         return filter_articles
 
+    def find_articles_with_tag(self, tag):
+        articles = []
+        for r in self.client.get_stream_contents(f"user/-/label/{tag}"):
+
+            articles.append(r)
+        self.articles = articles
+
     def find_articles_from_list(self, items):
         new_rs = {}
         for tag in items:
@@ -85,3 +92,11 @@ class InoReaderDataFetcher(DataFetcherBase):
             print("no feed list")
             return False
         return True
+
+    def get_tags(self):
+        tags = self.client.get_tags()
+        return tags
+
+    def get_articles_from_tag(self, tag):
+        articles = self.client.get_stream_contents(f"user/-/label/{tag}")
+        return [r for r in articles]
