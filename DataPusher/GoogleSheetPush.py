@@ -1,6 +1,7 @@
 from .DataPusherBase import DataPusherBase
 import gspread
 from log_util import logger
+import datetime
 
 
 class GoogleSheetPush(DataPusherBase):
@@ -77,7 +78,16 @@ class GoogleSheetPush(DataPusherBase):
         sheet = name_sheet[tag]
         data = []
         for a in articles:
-            data.append([a.id, a.title, a.link, a.published])
+            data.append(
+                [
+                    a.id,
+                    a.title,
+                    a.link,
+                    datetime.datetime.fromtimestamp(a.published).strftime(
+                        "%Y-%m-%d %H:%M:%S"
+                    ),
+                ]
+            )
         sheet.update("A1", data)
 
     def health_check(self):
