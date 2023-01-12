@@ -26,6 +26,12 @@ class GoogleSheetPush(DataPusherBase):
                 [[data[2], data[1], float(data[0]), money_type]],
             )
             self.current_line += 1
+        if self.topic == "write_classification":
+            self.sheet1.update(
+                f"A{self.current_line}:D{self.current_line}",
+                [[data[0], data[1],data[2],data[3]]],
+            )
+            self.current_line += 1
         logger.info(f"send: {data}")
         return {"result": "success"}
 

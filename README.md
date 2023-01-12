@@ -59,3 +59,8 @@
 2. update personal dashboard
 3. update read infra
 4. update wx channel
+
+
+# reference
+
+- [notion object documentation](https://developers.notion.com/reference/property-object#number-configuration)
