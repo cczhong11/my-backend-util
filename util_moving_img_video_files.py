@@ -17,8 +17,8 @@ if os.path.exists("/Volumes/BackupSSD/"):
     PATH = "/Volumes/BackupSSD/"
 possible_path = [
     "/Volumes/POCKET2/DCIM/100MEDIA",
+    "/Volumes/POCKET2/DCIM/101MEDIA",
     "/Volumes/POCKET2/DCIM/102MEDIA",
-    "/Volumes/POCKET2/DCIM/103MEDIA",
     "/Volumes/dji/DCIM/101MEDIA",
     "/Volumes/dji mini3/DCIM/100MEDIA",
     "/Volumes/eos rp/DCIM/100CANON",
