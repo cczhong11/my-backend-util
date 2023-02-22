@@ -13,8 +13,13 @@ class NotionItem:
         self.language = language
         self.description = description if description else ""
         self.available = available
-        self.last_update = last_update
+        last_update = str(last_update)
+        if last_update != "0":
+            self.last_update =last_update.replace(" ", "T") +".000Z"
+        else:
+            self.last_update = 0
         self.item_type = item_type
+        
         if len(self.description)>1000:
             self.description = self.description[:1000]
     def __str__(self):
