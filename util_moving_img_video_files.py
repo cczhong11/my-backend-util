@@ -22,9 +22,10 @@ possible_path = [
     "/Volumes/dji/DCIM/101MEDIA",
     "/Volumes/dji mini3/DCIM/100MEDIA",
     "/Volumes/eos rp/DCIM/100CANON",
-    "/Volumes/eos rp/DCIM/101CANON",
+    "/Volumes/eos rp/DCIM/102CANON",
     # "/Volumes/T7 Touch/iphone13/",
     "/Volumes/Action3/DCIM/DJI_002_A01/",
+    "/Volumes/BackupSSD/iphone13/AnyTrans-Export-2023-04-22/My Photos/"
 ]
 prefix = {
     "/Volumes/POCKET2/DCIM/": "pocket2",
