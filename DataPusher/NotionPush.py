@@ -5,7 +5,10 @@ from log_util import logger
 
 AMC_DB = "d0ed80f8b0ce4d8bb6aa4c6e6bfeaa6c"
 Restaurant_DB = "788b62b740ed41ce8827fd3e03ee4b97"
-JUNIOR_JOB = "45e59c8fba3643a1ad2d711ae5f4d6bf"
+indeed_page = {
+    "junior_swe": "45e59c8fba3643a1ad2d711ae5f4d6bf",
+    "interior design internship": "27d0ed3b3c364118afdff2c03abb4a2f",
+}
 
 
 def notion_util(data, column_type):
@@ -45,18 +48,6 @@ class NotionPush(DataPusherBase):
             self.bot.pages.create(
                 parent={"database_id": AMC_DB}, properties=new_page_props
             )
-        if dst == "junior_job":
-            new_page_props = {
-                "Company": notion_util(data["company"], "title"),
-                "Title": notion_util(data["title"], "rich_text"),
-                "City": notion_util(data["city"], "rich_text"),
-                "State": notion_util(data["state"], "rich_text"),
-                "Apply link": notion_util(data["link"], "url"),
-                "Posted": notion_util(data["posted"], "date"),
-            }
-            self.bot.pages.create(
-                parent={"database_id": JUNIOR_JOB}, properties=new_page_props
-            )
 
         if dst == "michelin":
             if not isinstance(data, Restaurant):
@@ -80,12 +71,27 @@ class NotionPush(DataPusherBase):
         logger.info(f"send {dst}: {data}")
         return {"result": "success"}
 
+    def push_indeed_job(self, data, dst):
+        new_page_props = {
+            "Company": notion_util(data["company"], "title"),
+            "Title": notion_util(data["title"], "rich_text"),
+            "City": notion_util(data["city"], "rich_text"),
+            "State": notion_util(data["state"], "rich_text"),
+            "Apply link": notion_util(data["link"], "url"),
+            "Posted": notion_util(data["posted"], "date"),
+        }
+        self.bot.pages.create(
+            parent={"database_id": indeed_page[dst]}, properties=new_page_props
+        )
+
+    def get_indeed_job(self, dst):
+        return self.load_page(indeed_page[dst], "junior_job")
+
     def get_current_data(self, topic):
         rs = {}
         if topic == "AMC":
             return self.load_page(AMC_DB, topic)
-        if topic == "junior_job":
-            return self.load_page(JUNIOR_JOB, topic)
+
         if topic == "michelin":
             return self.load_page(Restaurant_DB, topic)
         return rs

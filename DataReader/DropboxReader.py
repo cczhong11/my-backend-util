@@ -8,8 +8,10 @@ import dropbox
 
 
 class DropboxReader(DataReaderBase):
-    def __init__(self, access_token):
-        self.client = dropbox.Dropbox(access_token)
+    def __init__(self, key, secret, refresh_token):
+        self.client = dropbox.Dropbox(
+            app_key=key, app_secret=secret, oauth2_refresh_token=refresh_token
+        )
         super(DropboxReader, self).__init__()
 
     def get_data(self, path, subfix: List[str]):
