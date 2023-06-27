@@ -8,6 +8,7 @@ Restaurant_DB = "788b62b740ed41ce8827fd3e03ee4b97"
 indeed_page = {
     "junior_swe": "45e59c8fba3643a1ad2d711ae5f4d6bf",
     "interior design internship": "27d0ed3b3c364118afdff2c03abb4a2f",
+    "junior quantitative analyst": "4de0bfae31b94657a7e22bd929d66658",
 }
 
 

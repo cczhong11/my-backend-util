@@ -20,6 +20,7 @@ sqls = {
     select * from indeed where type = 'software engineer' and experience in ('1', '2', '0', 'new grad','intern', 'UNKNOWN','NO YEAR INFO') and (LOWER(title) like '%grad%' or LOWER(title) like '%entr%' or LOWER(title) like '%junior%'  or LOWER(title) like '% I %') and (LOWER(title) not like '%staff%') and date >= '{str_time(one_months_ago)}' order by date desc
     """,
     "interior design internship": f"select * from indeed where date >= '{str_time(six_months_ago)}' and type = 'interior design internship' order by date desc",
+    "junior quantitative analyst": f"select * from indeed where date >= '{str_time(one_months_ago)}' and type = 'junior quantitative analyst' order by date desc",
 }
 
 

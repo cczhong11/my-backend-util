@@ -11,7 +11,7 @@ feedgen>=0.9.0
 boto3>=1.18.0
 gne>=0.3.0
 google-auth-oauthlib>=0.4.6
-google-cloud-texttospeech>=2.11.1
+google-cloud-texttospeech>=2.14.1
 exifread<3
 openai
 dropbox

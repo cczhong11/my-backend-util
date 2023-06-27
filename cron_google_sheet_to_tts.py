@@ -6,6 +6,7 @@ import json
 import sys
 import os
 from log_util import logger
+from DataExtractor.WechatExtractor import WechatExtractor
 
 api = {}
 with open(f"{PATH}/key.json") as f:
@@ -21,7 +22,10 @@ def run():
     data = []
     for line in items:
         if "https:" in line[0]:
-            tts.get_data(line[0])
+            if "mp.weixin.qq.com" in line[0]:
+                tts.get_wechat_data(line[0], f"{PATH}/cookie/wechat.cookie")
+            else:
+                tts.get_data(line[0])
             s3.write_data(
                 "articles",
                 os.path.join(f"{PATH}/data/tts/", f"{tts.current_title()}.mp3"),
