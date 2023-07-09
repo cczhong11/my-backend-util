@@ -22,13 +22,14 @@ def run():
         sys.exit(1)
     # get data
     data = amc.get_data("")
+    print(data)
     current_data = notion_push.get_current_data("AMC")
     current_movie = set()
     for movie in data["data"]:
         current_movie.add(movie["name"])
         if movie["name"] in current_data and current_data[movie["name"]][1] != -1:
             continue
-        douban_info = douban.get_data(movie["imdb"])
+        douban_info = douban.get_data(movie["imdb"] if movie["imdb"] else movie["name"])
         movie["douban"] = douban_info.get("rating", -1)
         movie["douban_url"] = douban_info.get("href", None)
         movie["chinese_name"] = douban_info.get("title", "")
@@ -37,7 +38,11 @@ def run():
         else:
             notion_push.update_page(
                 current_data[movie["name"]][0],
-                properties={"douban": notion_util(movie["douban"], "number")},
+                properties={
+                    "douban": notion_util(movie["douban"], "number"),
+                    "douban_url": notion_util(movie["douban_url"], "url"),
+                    "chinese_name": notion_util(movie["chinese_name"], "rich_text"),
+                },
             )
     for m in current_data:
         if m not in current_movie:

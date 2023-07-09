@@ -28,6 +28,8 @@ for entry in rs:
         data = f.read()
     print(data)
     new_data = whisper.improve_data(data)
+    suggestion = whisper.suggest_data(data)
+    new_data = new_data + "\n" + suggestion
     with open(f"/Users/tianchenzhong/Downloads/日记/{filename}", "w") as f:
         f.write(new_data)
     ifttt.push_data({"value1": new_data}, "dayone_trigger")

@@ -29,5 +29,13 @@ class OpenAIDataWriter(DataWriterBase):
 
         return completion.choices[0].message.content
 
+    def suggest_data(self, text):
+        prompt = f"下面一段话来自我的日记，请告诉我在哪些方面我可以进行更多的描述以提高我的文笔，只列三点，回答时用“以下是chatgpt的建议：”开头，列出建议。在建议之后写一段例子应用这些建议: {text}"
+        completion = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo", messages=[{"role": "user", "content": prompt}]
+        )
+
+        return completion.choices[0].message.content
+
     def health_check(self) -> bool:
         return True
