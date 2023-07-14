@@ -16,7 +16,7 @@ PATH = "/Volumes/T7 Touch/orgranized photo"
 if os.path.exists("/Volumes/BackupSSD/"):
     PATH = "/Volumes/BackupSSD/"
 possible_path = [
-    "/Volumes/POCKET2/DCIM/100MEDIA",
+    "/Volumes/POCKET2/DCIM/103MEDIA",
     "/Volumes/POCKET2/DCIM/101MEDIA",
     "/Volumes/POCKET2/DCIM/102MEDIA",
     "/Volumes/dji/DCIM/101MEDIA",
@@ -25,7 +25,7 @@ possible_path = [
     "/Volumes/eos rp/DCIM/102CANON",
     # "/Volumes/T7 Touch/iphone13/",
     "/Volumes/Action3/DCIM/DJI_002_A01/",
-    "/Volumes/BackupSSD/iphone13/AnyTrans-Export-2023-04-22/My Photos/"
+    "/Volumes/BackupSSD/iphone13/AnyTrans-Export-2023-04-22/My Photos/",
 ]
 prefix = {
     "/Volumes/POCKET2/DCIM/": "pocket2",

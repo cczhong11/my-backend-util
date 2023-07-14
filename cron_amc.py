@@ -22,7 +22,7 @@ def run():
         sys.exit(1)
     # get data
     data = amc.get_data("")
-    print(data)
+
     current_data = notion_push.get_current_data("AMC")
     current_movie = set()
     for movie in data["data"]:
