@@ -21,21 +21,27 @@ class OpenAIDataWriter(DataWriterBase):
             with open(os.path.join(dst_path, single_filename), "w") as f:
                 f.write(transcript.text)
 
+    def ask_chatgpt(self, prompt, use_16k_model=False):
+        model = "gpt-3.5-turbo"
+        if use_16k_model:
+            model = "gpt-3.5-turbo-16k"
+        completion = openai.ChatCompletion.create(
+            model=model, messages=[{"role": "user", "content": prompt}]
+        )
+
+        return completion.choices[0].message.content
+
     def improve_data(self, text):
         prompt = f"下面一段话是来自语音转文字，里面可能有英语变成了中文，请帮忙理顺，回答时只输出修改后的内容: {text}"
-        completion = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo", messages=[{"role": "user", "content": prompt}]
-        )
-
-        return completion.choices[0].message.content
+        return self.ask_chatgpt(prompt)
 
     def suggest_data(self, text):
-        prompt = f"下面一段话来自我的日记，请告诉我在哪些方面我可以进行更多的描述以提高我的文笔，只列三点，回答时用“以下是chatgpt的建议：”开头，列出建议。在建议之后写一段例子应用这些建议: {text}"
-        completion = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo", messages=[{"role": "user", "content": prompt}]
-        )
+        prompt = f"下面一段话来自我的日记，请告诉我在哪些方面我可以描述细节和感受，哪些句式可以优化，哪些地方可以反思，回答时用“以下是chatgpt的建议：”开头，之后给出例子。{text}"
+        return self.ask_chatgpt(prompt)
 
-        return completion.choices[0].message.content
+    def summary_data(self, context, text, use_16k_model=False):
+        prompt = f"{context}。用中文总结下面的内容。{text}"
+        return self.ask_chatgpt(prompt, use_16k_model)
 
     def health_check(self) -> bool:
         return True

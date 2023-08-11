@@ -10,6 +10,7 @@ indeed_page = {
     "interior design internship": "27d0ed3b3c364118afdff2c03abb4a2f",
     "junior quantitative analyst": "4de0bfae31b94657a7e22bd929d66658",
 }
+all_trails_page = "25374a4d5915413c9534b7b66d8d4494"
 
 
 def notion_util(data, column_type):

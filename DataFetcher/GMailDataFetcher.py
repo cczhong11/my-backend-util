@@ -28,6 +28,7 @@ class NewsLetterType(Enum):
     DATASHEET = "fortune@newsletter.fortune.com"
     HACKERNEWS = "kale@hackernewsletter.com"
     INFORMATION = "hello@theinformation.com"
+    WSJ = "access@interactive.wsj.com"
 
 
 class GMailDataFetcher(DataFetcherBase):
@@ -85,7 +86,6 @@ class GMailDataFetcher(DataFetcherBase):
         self.query += f"after:{begin} before:{end} "
 
     def health_check(self):
-
         response = (
             self.service.users().messages().list(userId="me", q=self.query).execute()
         )
