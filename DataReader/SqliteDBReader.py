@@ -8,7 +8,6 @@ import os
 
 class SqliteDBReader(DataReaderBase):
     def __init__(self, sqlite_db_path):
-
         self.sqlite_db_path = sqlite_db_path
         super(SqliteDBReader, self).__init__()
 

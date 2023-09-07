@@ -9,17 +9,19 @@ from DataWriter.DiskDataWriter import DiskDataWriter
 
 logging.basicConfig()
 
-
+BACKUP_MODE = False
 logging.root.setLevel(logging.INFO)
 # PATH = "/Volumes/BackupSSD/"  # "/Volumes/T7 Touch/orgranized photo"
 PATH = "/Volumes/T7 Touch/orgranized photo"
 if os.path.exists("/Volumes/BackupSSD/"):
     PATH = "/Volumes/BackupSSD/"
+    BACKUP_MODE = True
 possible_path = [
     "/Volumes/POCKET2/DCIM/103MEDIA",
     "/Volumes/POCKET2/DCIM/101MEDIA",
     "/Volumes/POCKET2/DCIM/102MEDIA",
     "/Volumes/dji/DCIM/101MEDIA",
+    "/Volumes/dji mini3/DCIM/101MEDIA",
     "/Volumes/dji mini3/DCIM/100MEDIA",
     "/Volumes/eos rp/DCIM/100CANON",
     "/Volumes/eos rp/DCIM/102CANON",
@@ -40,7 +42,7 @@ def move_volume(volume):
         if p in volume:
             file_prefix = prefix[p]
     fd = FileDataReader(volume)
-    dw = DiskDataWriter(PATH)
+    dw = DiskDataWriter(PATH, False, BACKUP_MODE)
     if not fd.health_check() or not dw.health_check():
         print(f"{volume} is not exist or {PATH} not exist")
         return

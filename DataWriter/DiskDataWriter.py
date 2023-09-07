@@ -36,12 +36,18 @@ def find_img_original_time(filename: str) -> Optional[datetime.datetime]:
 
 
 class DiskDataWriter(DataWriterBase):
-    def __init__(self, folder, dry_run=False):
+    def __init__(self, folder, dry_run=False, backup=False):
         super(DiskDataWriter, self).__init__()
         self.folder = folder
         self.dry_run = dry_run
+        self.backup = backup
 
-    def write_data_to_date_based_folder(self, filename, rename="", food=False):
+    def write_data_to_date_based_folder(
+        self,
+        filename,
+        rename="",
+        food=False,
+    ):
         mt_time = find_img_original_time(filename)
         if mt_time is None:
             stat = os.stat(filename)
@@ -67,6 +73,12 @@ class DiskDataWriter(DataWriterBase):
             print(f"{os.path.join(base_folder, single_file)} already exists")
         if self.dry_run:
             print(f"move {filename} to {os.path.join(base_folder, single_file)}")
+            return
+        if self.backup:
+            shutil.copy2(
+                f"{filename}",
+                f"{os.path.join(base_folder, single_file)}",
+            )
             return
         shutil.move(
             f"{filename}",

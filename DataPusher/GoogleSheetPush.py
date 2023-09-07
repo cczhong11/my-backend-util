@@ -5,7 +5,7 @@ import datetime
 
 
 class GoogleSheetPush(DataPusherBase):
-    def __init__(self, filename, sheet, topic, filter, debug=False):
+    def __init__(self, filename, sheet, topic=None, filter=None, debug=False):
         self.gc = gspread.service_account(filename)
         self.sheet = self.gc.open_by_key(sheet)
         self.sheet1 = self.sheet.sheet1
@@ -29,7 +29,7 @@ class GoogleSheetPush(DataPusherBase):
         if self.topic == "write_classification":
             self.sheet1.update(
                 f"A{self.current_line}:D{self.current_line}",
-                [[data[0], data[1],data[2],data[3]]],
+                [[data[0], data[1], data[2], data[3]]],
             )
             self.current_line += 1
         logger.info(f"send: {data}")
@@ -38,7 +38,6 @@ class GoogleSheetPush(DataPusherBase):
     def clean_data(self, items=None):
         data = []
         if self.topic == "sheet_clean_hahaha":
-
             for line in self.all_data:
                 if line[2] == "让自己开心一点":
                     continue
