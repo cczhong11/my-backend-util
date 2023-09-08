@@ -1,8 +1,9 @@
+import random
 from DataFetcher.AccuweatherDataFetcher import AccuweatherDataFetcher
 from DataFetcher.GMailDataFetcher import GMailDataFetcher, NewsLetterType
 from DataFetcher.GoogleCalendarDataFetcher import GoogleCalendarDataFetcher
 from DataFetcher.RSSDataFetcher import RSSDataFetcher
-
+from DataReader.PersonalBackendReader import PersonalBackendReader
 from web_util import read_json_file
 from DataWriter.OpenAIDataWriter import OpenAIDataWriter
 from constant import PATH
@@ -13,11 +14,18 @@ from web_util import read_json_file
 
 
 @dataclasses.dataclass
+class BookWisdom:
+    book_name: str
+    wisdoms: list
+
+
+@dataclasses.dataclass
 class DailyInformation:
     events: list
     wsj_news: str
     weather: str
     hacker_news: list
+    book_text: BookWisdom
 
 
 today = time_util.str_time(time_util.get_current_date(), "%Y/%m/%d")
@@ -25,6 +33,7 @@ yesterday = time_util.str_time(time_util.get_yesterday(), "%Y/%m/%d")
 tomorrow = time_util.str_time(time_util.get_next_day(), "%Y/%m/%d")
 api = read_json_file(f"{PATH}/key.json")
 life_calendar = api["life_calendar"]
+personal_backend_url = api["personal_backend_url"]
 
 
 def clean_wsj(content):
@@ -86,12 +95,23 @@ def run_hacker_news():
     return news
 
 
+def run_book_wisdom():
+    books = PersonalBackendReader(personal_backend_url)
+    # choose a book
+    random_book = random.choice(books.get_list("kindle")["data"])
+    book_name = random_book["name"].split(".")[0]
+    book_text = books.get_data("kindle", book_name)
+    random_five = random.sample(book_text["data"][0]["data"].get("content"), 5)
+    return BookWisdom(book_name, random_five)
+
+
 def run():
     events = run_calendar()
     wsj_summary = run_wsj()
     weather = run_weather()
     hacker_news = run_hacker_news()
-    daily_info = DailyInformation(events, wsj_summary, weather, hacker_news)
+    bookwisdom = run_book_wisdom()
+    daily_info = DailyInformation(events, wsj_summary, weather, hacker_news, bookwisdom)
     print(daily_info)
 
 

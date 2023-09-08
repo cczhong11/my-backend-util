@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="ztc-backend-util",  # Replace with your own username
-    version="0.2.1",
+    version="0.3.1",
     author="Tianchen Zhong",
     author_email="me@tczhong.com",
     description="A util for myself",
