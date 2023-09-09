@@ -1,16 +1,19 @@
 import random
+
+from bs4 import BeautifulSoup
 from DataFetcher.AccuweatherDataFetcher import AccuweatherDataFetcher
 from DataFetcher.GMailDataFetcher import GMailDataFetcher, NewsLetterType
 from DataFetcher.GoogleCalendarDataFetcher import GoogleCalendarDataFetcher
 from DataFetcher.RSSDataFetcher import RSSDataFetcher
 from DataReader.PersonalBackendReader import PersonalBackendReader
-from web_util import read_json_file
+from DataFetcher.ZhihuArticleFetcher import ZhihuArticleFetcher
 from DataWriter.OpenAIDataWriter import OpenAIDataWriter
 from constant import PATH
 import time_util
 import dataclasses
 import re
-from web_util import read_json_file
+from web_util import read_json_file, parse_curl
+import os
 
 
 @dataclasses.dataclass
@@ -26,6 +29,7 @@ class DailyInformation:
     weather: str
     hacker_news: list
     book_text: BookWisdom
+    meitou: list
 
 
 today = time_util.str_time(time_util.get_current_date(), "%Y/%m/%d")
@@ -34,6 +38,7 @@ tomorrow = time_util.str_time(time_util.get_next_day(), "%Y/%m/%d")
 api = read_json_file(f"{PATH}/key.json")
 life_calendar = api["life_calendar"]
 personal_backend_url = api["personal_backend_url"]
+openai = OpenAIDataWriter(api["openai"])
 
 
 def clean_wsj(content):
@@ -76,7 +81,6 @@ def run_wsj():
     rs = gmail.analyze(NewsLetterType.WSJ, tmp)
     wsj = rs[0]["content"]
     wsj = clean_wsj(wsj)
-    openai = OpenAIDataWriter(api["openai"])
 
     wsj_summary = openai.summary_data(
         "这是一段10条新闻。先说新闻，最后说说在那些方面的股票可能会受到上述新闻的影响。", wsj[:5000], use_16k_model=False
@@ -105,13 +109,34 @@ def run_book_wisdom():
     return BookWisdom(book_name, random_five)
 
 
+def run_zhihu_meitou():
+    with open(os.path.join(PATH, "cookie", "zhihu.cookie")) as f:
+        cookie_str = f.read()
+    url, header = parse_curl(cookie_str)
+    result = ZhihuArticleFetcher(url, header).get_data()
+    summary = []
+    for article in result:
+        c = article["content"]
+        soup = BeautifulSoup(c, "html.parser")
+        text = soup.get_text()
+        if len(text) > 2000:
+            text = text[:2000]
+        summary.append(
+            openai.summary_data("这是一段文章。总结一下里面的重要内容:", text, use_16k_model=False)
+        )
+    return summary
+
+
 def run():
     events = run_calendar()
     wsj_summary = run_wsj()
     weather = run_weather()
     hacker_news = run_hacker_news()
     bookwisdom = run_book_wisdom()
-    daily_info = DailyInformation(events, wsj_summary, weather, hacker_news, bookwisdom)
+    meitou = run_zhihu_meitou()
+    daily_info = DailyInformation(
+        events, wsj_summary, weather, hacker_news, bookwisdom, meitou
+    )
     print(daily_info)
 
 
