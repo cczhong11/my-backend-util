@@ -1,12 +1,14 @@
 import random
 
 from bs4 import BeautifulSoup
+from DataFetcher.TTSFetcher import TTSFetcher
 from DataFetcher.AccuweatherDataFetcher import AccuweatherDataFetcher
 from DataFetcher.GMailDataFetcher import GMailDataFetcher, NewsLetterType
 from DataFetcher.GoogleCalendarDataFetcher import GoogleCalendarDataFetcher
 from DataFetcher.RSSDataFetcher import RSSDataFetcher
 from DataReader.PersonalBackendReader import PersonalBackendReader
 from DataFetcher.ZhihuArticleFetcher import ZhihuArticleFetcher
+from DataWriter.AWSS3DataWriter import AWSS3DataWriter
 from DataWriter.OpenAIDataWriter import OpenAIDataWriter
 from constant import PATH
 import time_util
@@ -33,6 +35,7 @@ class DailyInformation:
 
 
 today = time_util.str_time(time_util.get_current_date(), "%Y/%m/%d")
+today_str = time_util.str_time(time_util.get_current_date(), "%Y-%m-%d")
 yesterday = time_util.str_time(time_util.get_yesterday(), "%Y/%m/%d")
 tomorrow = time_util.str_time(time_util.get_next_day(), "%Y/%m/%d")
 api = read_json_file(f"{PATH}/key.json")
@@ -137,7 +140,23 @@ def run():
     daily_info = DailyInformation(
         events, wsj_summary, weather, hacker_news, bookwisdom, meitou
     )
-    print(daily_info)
+    wisdom = "\n".join(daily_info.book_text.wisdoms)
+    meitou = "\n".join(daily_info.meitou)
+    tts = TTSFetcher(f"{PATH}/cookie/tts-google.json", f"{PATH}/data/tts")
+    s3 = AWSS3DataWriter("rss-ztc")
+    result = f"""
+    今天的新闻: {daily_info.wsj_news}
+    今天的天气: {daily_info.weather}
+    hacker news: {' '.join(daily_info.hacker_news)}
+    读过的书: {daily_info.book_text.book_name}
+    {wisdom}
+    投资新闻: {meitou}
+    """
+    tts.get_tts_from_text(result, today_str)
+    s3.write_data(
+        "daily",
+        os.path.join(f"{PATH}/data/tts/", f"{tts.current_title()}.mp3"),
+    )
 
 
 if __name__ == "__main__":

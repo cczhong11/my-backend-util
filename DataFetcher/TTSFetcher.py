@@ -23,6 +23,7 @@ class Article:
         self.content = None
         self.publish_time = None
         self.delimeter = "_"
+        self.language = "zh-CN"
 
     def read_from_url(self, path):
         r = requests.get(self.url)
@@ -51,19 +52,19 @@ class Article:
                     for i in range(0, len(tmp), MAX_LETTER):
                         tts(
                             tmp[:MAX_LETTER],
-                            "zh-CN",
+                            self.language,
                             f"{self.title}{self.delimeter}{index}.mp3",
                         )
                         tmp = tmp[MAX_LETTER:]
                         index += 1
                     index -= 1
                 else:
-                    tts(tmp, "zh-CN", f"{self.title}{self.delimeter}{index}.mp3")
+                    tts(tmp, self.language, f"{self.title}{self.delimeter}{index}.mp3")
                 tmp = line
                 index += 1
             else:
                 tmp = tmp + line
-        tts(tmp, "zh-CN", f"{self.title}{self.delimeter}{index}.mp3")
+        tts(tmp, self.language, f"{self.title}{self.delimeter}{index}.mp3")
         index += 1
         tmp_file = f"{self.title}.tmp.txt"
         new_file = f"{self.title}.mp3"
@@ -105,6 +106,15 @@ class TTSFetcher(DataFetcherBase):
         self.title = article.title
         if os.path.exists(os.path.join(self.path, f"{article.title}.mp3")):
             return
+        article.to_tts(self.gTTS_text, self.path)
+
+    def get_tts_from_text(self, text, title):
+        self.title = title
+        if os.path.exists(os.path.join(self.path, f"{title}.mp3")):
+            return
+        article = Article("")
+        article.title = title
+        article.content = text
         article.to_tts(self.gTTS_text, self.path)
 
     def get_data(self, url):
