@@ -96,7 +96,7 @@ def run_weather():
 def run_hacker_news():
     rss = RSSDataFetcher("https://hnrss.org/newest?points=500")
     news = rss.fetch(time_util.get_yesterday())
-    return news
+    return [n["title"] for n in news]
 
 
 def run_book_wisdom():
