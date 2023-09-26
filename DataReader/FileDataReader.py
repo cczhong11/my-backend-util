@@ -53,6 +53,8 @@ class FileDataReader(DataReaderBase):
             return rs
 
         for item in os.listdir(absolute_path):
+            if item.startswith("."):
+                continue
             if (
                 ".JPG" in item
                 or ".jpg" in item

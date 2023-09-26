@@ -26,12 +26,21 @@ file_folder = {
 
 def find_img_original_time(filename: str) -> Optional[datetime.datetime]:
     with open(filename, "rb") as fh:
-        tags = exifread.process_file(fh, stop_tag="EXIF DateTimeOriginal")
+        try:
+            tags = exifread.process_file(fh, stop_tag="EXIF DateTimeOriginal")
+        except Exception as e:
+            print(f"{filename} has error {e}")
+            return None
         dateTaken = tags.get("EXIF DateTimeOriginal", None)
         if dateTaken:
-            dateTaken = datetime.datetime.strptime(
-                dateTaken.printable, "%Y:%m:%d %H:%M:%S"
-            )
+            try:
+                dateTaken = datetime.datetime.strptime(
+                    dateTaken.printable[:19], "%Y:%m:%d %H:%M:%S"
+                )
+            except ValueError:
+                dateTaken = datetime.datetime.strptime(
+                    dateTaken.printable, "%Y-%m-%d %H:%M:%S"
+                )
         return dateTaken
 
 
@@ -79,6 +88,14 @@ class DiskDataWriter(DataWriterBase):
                 f"{filename}",
                 f"{os.path.join(base_folder, single_file)}",
             )
+            print(f"backup {filename} to {os.path.join(base_folder, single_file)}")
+            return
+        if os.path.exists(
+            os.path.join(base_folder, single_file)
+        ) and filename != os.path.join(base_folder, single_file):
+            print(f"{os.path.join(base_folder, single_file)} already exists")
+            # delete the file
+            # os.remove(filename)
             return
         shutil.move(
             f"{filename}",

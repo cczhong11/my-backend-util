@@ -1,6 +1,7 @@
 import random
 
 from bs4 import BeautifulSoup
+from DataFetcher.JiuDianArticleFetcher import JiudianArticleFetcher
 from DataFetcher.TTSFetcher import TTSFetcher
 from DataFetcher.AccuweatherDataFetcher import AccuweatherDataFetcher
 from DataFetcher.GMailDataFetcher import GMailDataFetcher, NewsLetterType
@@ -16,6 +17,7 @@ import dataclasses
 import re
 from web_util import read_json_file, parse_curl
 import os
+import datetime
 
 
 @dataclasses.dataclass
@@ -86,7 +88,7 @@ def run_wsj():
     wsj = clean_wsj(wsj)
 
     wsj_summary = openai.summary_data(
-        "这是一段10条新闻。先说新闻，最后说说在那些方面的股票可能会受到上述新闻的影响。", wsj[:5000], use_16k_model=False
+        "这是一段10条新闻。先说新闻，最后说说在那些方面的股票可能会受到上述新闻的影响。", wsj[:6000], use_16k_model=False
     )
     return wsj_summary
 
@@ -112,22 +114,15 @@ def run_book_wisdom():
     return BookWisdom(book_name, random_five)
 
 
-def run_zhihu_meitou():
-    with open(os.path.join(PATH, "cookie", "zhihu.cookie")) as f:
-        cookie_str = f.read()
-    url, header = parse_curl(cookie_str)
-    result = ZhihuArticleFetcher(url, header).get_data()
-    summary = []
-    for article in result:
-        c = article["content"]
-        soup = BeautifulSoup(c, "html.parser")
-        text = soup.get_text()
-        if len(text) > 2000:
-            text = text[:2000]
-        summary.append(
-            openai.summary_data("这是一段文章。总结一下里面的重要内容:", text, use_16k_model=False)
-        )
-    return summary
+def run_meitou():
+    jd = JiudianArticleFetcher()
+    if not jd.health_check():
+        print("jd health check failed")
+        return []
+    return [
+        f"视频标题:{d['title']} 发布频道:{d['yt_chan_title']} 内容总结:{' '.join(d['extracted_texts'])}"
+        for d in jd.get_data()
+    ]
 
 
 def run():
@@ -136,7 +131,7 @@ def run():
     weather = run_weather()
     hacker_news = run_hacker_news()
     bookwisdom = run_book_wisdom()
-    meitou = run_zhihu_meitou()
+    meitou = run_meitou()
     daily_info = DailyInformation(
         events, wsj_summary, weather, hacker_news, bookwisdom, meitou
     )
@@ -152,6 +147,9 @@ def run():
     {wisdom}
     投资新闻: {meitou}
     """
+
+    with open(f"{PATH}/data/tts/{today_str}.txt", "w") as f:
+        f.write(result)
     tts.get_tts_from_text(result, today_str)
     s3.write_data(
         "daily",
