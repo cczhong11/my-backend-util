@@ -43,5 +43,9 @@ class OpenAIDataWriter(DataWriterBase):
         prompt = f"{context}。用中文总结下面的内容。{text}"
         return self.ask_chatgpt(prompt, use_16k_model)
 
+    def markdown_data(self, text):
+        prompt = f"将下面的话变成markdown格式: {text}"
+        return self.ask_chatgpt(prompt)
+
     def health_check(self) -> bool:
         return True

@@ -1,4 +1,5 @@
 import random
+from typing import List
 
 from bs4 import BeautifulSoup
 from DataFetcher.JiuDianArticleFetcher import JiudianArticleFetcher
@@ -18,6 +19,7 @@ import re
 from web_util import read_json_file, parse_curl
 import os
 import datetime
+from gcsa.event import Event
 
 
 @dataclasses.dataclass
@@ -42,6 +44,7 @@ yesterday = time_util.str_time(time_util.get_yesterday(), "%Y/%m/%d")
 tomorrow = time_util.str_time(time_util.get_next_day(), "%Y/%m/%d")
 api = read_json_file(f"{PATH}/key.json")
 life_calendar = api["life_calendar"]
+main_calendar = api["main_calendar"]
 personal_backend_url = api["personal_backend_url"]
 openai = OpenAIDataWriter(api["openai"])
 
@@ -62,7 +65,7 @@ def clean_wsj(content):
     return readable_content
 
 
-def run_calendar():
+def run_calendar() -> List[Event]:
     cal = GoogleCalendarDataFetcher(
         secret_file=None, credentials_file=f"{PATH}/cookie/gmailcredentials.json"
     )
@@ -70,7 +73,17 @@ def run_calendar():
     events = cal.get_data(
         life_calendar, time_util.get_current_date(), time_util.get_next_day()
     )
-    return events
+    result = []
+    for e in events:
+        if e.summary != "ME" and e.summary != "wmtd":
+            result.append(e)
+    main_events = cal.get_data(
+        "primary", time_util.get_current_date(), time_util.get_next_day()
+    )
+    for e in main_events:
+        if e.summary != "ME" and e.summary != "wmtd" and "°C" not in e.summary:
+            result.append(e)
+    return result
 
 
 def run_wsj():
@@ -82,6 +95,7 @@ def run_wsj():
     gmail.reset_query()
     gmail.set_sender(NewsLetterType.WSJ)
     gmail.set_time(today, tomorrow)
+    gmail.add_query(" The 10-Point ")
     tmp = gmail.get_data()
     rs = gmail.analyze(NewsLetterType.WSJ, tmp)
     wsj = rs[0]["content"]
@@ -91,6 +105,44 @@ def run_wsj():
         "这是一段10条新闻。先说新闻，最后说说在那些方面的股票可能会受到上述新闻的影响。", wsj[:6000], use_16k_model=False
     )
     return wsj_summary
+
+
+def clean_tech(content):
+    # find html tag
+    soup = BeautifulSoup(content, "html.parser")
+    text_content = soup.text
+    text_content = re.sub(r"â\x80\x8c\s*", "", text_content)
+    lines = text_content.split("\n")
+    # skip first TechCrunch Newsletter
+    start_index = 1
+    current_index = 1
+    for line in lines[1:]:
+        if "TechCrunch Newsletter" in line:
+            start_index = current_index + 1
+            break
+        current_index += 1
+    return "\n".join(lines[start_index:])
+
+
+def run_techcrunch():
+    gmail = GMailDataFetcher(
+        f"{PATH}/cookie/gmail.json", f"{PATH}/cookie/gmailcredentials.json"
+    )
+    if not gmail.health_check():
+        raise Exception("gmail health check failed")
+    gmail.reset_query()
+    gmail.set_sender(NewsLetterType.TECHCRUNCH)
+    gmail.set_time(today, tomorrow)
+    tmp = gmail.get_data()
+    rs = gmail.analyze(NewsLetterType.TECHCRUNCH, tmp)
+    tech = rs[0]["content"]
+
+    tech = clean_tech(tech)
+
+    tech_summary = openai.summary_data(
+        "这是一些科技新闻，用中文总结一下。", tech[:6000], use_16k_model=False
+    )
+    return tech_summary
 
 
 def run_weather():
@@ -128,6 +180,7 @@ def run_meitou():
 def run():
     events = run_calendar()
     wsj_summary = run_wsj()
+    tech_summary = run_techcrunch()
     weather = run_weather()
     hacker_news = run_hacker_news()
     bookwisdom = run_book_wisdom()
@@ -135,12 +188,21 @@ def run():
     daily_info = DailyInformation(
         events, wsj_summary, weather, hacker_news, bookwisdom, meitou
     )
+    event_str = "\n".join(
+        [
+            f"从{e.start.hour}:{e.start.minute}到{e.end.hour}:{e.end.minute} {e.summary} {e.description or ''}"
+            for e in events or []
+            if e.summary != "ME" and e.summary != "wmtd"
+        ]
+    )
     wisdom = "\n".join(daily_info.book_text.wisdoms)
     meitou = "\n".join(daily_info.meitou)
     tts = TTSFetcher(f"{PATH}/cookie/tts-google.json", f"{PATH}/data/tts")
     s3 = AWSS3DataWriter("rss-ztc")
     result = f"""
+    今天的日历: {event_str}
     今天的新闻: {daily_info.wsj_news}
+    科技新闻: {tech_summary}
     今天的天气: {daily_info.weather}
     hacker news: {' '.join(daily_info.hacker_news)}
     读过的书: {daily_info.book_text.book_name}

@@ -16,3 +16,4 @@ exifread<3
 openai
 dropbox
 gcsa
+feedparser

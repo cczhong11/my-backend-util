@@ -110,6 +110,9 @@ class GMailDataFetcher(DataFetcherBase):
         # filter none
         return result
 
+    def add_query(self, query):
+        self.query += query
+
     def analyze_general(self, message):
         if "payload" not in message:
             return

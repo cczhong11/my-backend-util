@@ -1,6 +1,7 @@
 from .DataPusherBase import DataPusherBase
 from telegram import Bot
 from log_util import logger
+import asyncio
 
 
 class TelegramPush(DataPusherBase):
@@ -12,7 +13,8 @@ class TelegramPush(DataPusherBase):
         if self.debug:
             print(f"send {dst}: {data}")
             return {}
-        self.bot.send_message(dst, data)
+        asyncio.run(self.bot.send_message(dst, data))
+
         logger.info(f"send {dst}: {data}")
         return {"result": "success"}
 
@@ -21,9 +23,9 @@ class TelegramPush(DataPusherBase):
             print(f"send picture {data} to {dst}")
             return {}
         if ".gif" in data:
-            self.bot.send_document(dst, data)
+            asyncio.run(self.bot.send_document(dst, data))
         else:
-            self.bot.send_photo(dst, data)
+            asyncio.run(self.bot.send_photo(dst, data))
 
     def health_check(self):
         return True

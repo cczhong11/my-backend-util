@@ -12,13 +12,14 @@ logging.basicConfig()
 
 logging.root.setLevel(logging.INFO)
 
-PATH = "/Volumes/My Book/photo backup/phone"
+PATH = "/Volumes/My Book/photo backup/照片整理"
 
 possible_path = [
     # "/Volumes/photo/iphonese/三星",
     # "/Volumes/photo/iphonese/相机胶卷",
     # "/Volumes/My Book/photo backup/iphonexs"
-    "/Volumes/My Book/iphone12/AnyTrans-Export-2023-09-17/My Photos"
+    # "/Volumes/My Book/iphone12/AnyTrans-Export-2023-09-17/My Photos",
+    "/Volumes/TOSHIBA EXT/photo/"
 ]
 prefix = {
     "/Volumes/POCKET2/DCIM/": "pocket2",
@@ -33,7 +34,7 @@ def move_volume(volume):
         if p in volume:
             file_prefix = prefix[p]
     fd = FileDataReader(volume)
-    dw = DiskDataWriter(PATH, False, True)
+    dw = DiskDataWriter(PATH, False, False)
     if not fd.health_check() or not dw.health_check():
         print(f"{volume} is not exist or {PATH} not exist")
         return

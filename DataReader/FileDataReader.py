@@ -66,6 +66,8 @@ class FileDataReader(DataReaderBase):
                 or ".DNG" in item
                 or ".HEIC" in item
                 or ".heic" in item
+                or ".jpeg" in item
+                or ".JPEG" in item
             ):
                 rs.append({"name": os.path.join(absolute_path, item)})
             if os.path.isdir(absolute_path + "/" + item):
@@ -92,6 +94,8 @@ class FileDataReader(DataReaderBase):
                 or ".MOV" in item
                 or ".AAC" in item
                 or ".SRT" in item
+                or ".AVI" in item
+                or ".avi" in item
             ):
                 rs.append({"name": os.path.join(absolute_path, item)})
             if os.path.isdir(absolute_path + "/" + item):

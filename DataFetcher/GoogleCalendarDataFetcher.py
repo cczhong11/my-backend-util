@@ -1,7 +1,9 @@
 # fetch google calendar data automatically
 
+from typing import Iterable
 from .DataFetcherBase import DataFetcherBase
 from gcsa.google_calendar import GoogleCalendar
+from gcsa.event import Event
 
 
 class GoogleCalendarDataFetcher(DataFetcherBase):
@@ -17,7 +19,7 @@ class GoogleCalendarDataFetcher(DataFetcherBase):
     def load_cookie(self):
         self.gc = GoogleCalendar(credentials_path=self.credentials_file)
 
-    def get_data(self, calendar_id, time_min=None, time_max=None):
+    def get_data(self, calendar_id, time_min=None, time_max=None) -> Iterable[Event]:
         return self.gc.get_events(
             time_min=time_min, time_max=time_max, calendar_id=calendar_id
         )

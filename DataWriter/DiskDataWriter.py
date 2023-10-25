@@ -15,12 +15,16 @@ file_folder = {
     "PNG": "pic",
     "HEIC": "pic",
     "heic": "pic",
+    "jpeg": "pic",
+    "JPEG": "pic",
     "mp4": "video",
     "MP4": "video",
     "MOV": "video",
     "mov": "video",
     "AAC": "video",
     "SRT": "video",
+    "AVI": "video",
+    "avi": "video",
 }
 
 
@@ -38,9 +42,12 @@ def find_img_original_time(filename: str) -> Optional[datetime.datetime]:
                     dateTaken.printable[:19], "%Y:%m:%d %H:%M:%S"
                 )
             except ValueError:
-                dateTaken = datetime.datetime.strptime(
-                    dateTaken.printable, "%Y-%m-%d %H:%M:%S"
-                )
+                try:
+                    dateTaken = datetime.datetime.strptime(
+                        dateTaken.printable, "%Y-%m-%d %H:%M:%S"
+                    )
+                except:
+                    return None
         return dateTaken
 
 
@@ -101,6 +108,7 @@ class DiskDataWriter(DataWriterBase):
             f"{filename}",
             f"{os.path.join(base_folder, single_file)}",
         )
+        print(f"move {filename} to {os.path.join(base_folder, single_file)}")
 
     def health_check(self) -> bool:
         if os.path.exists(self.folder):
