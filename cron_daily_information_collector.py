@@ -20,6 +20,12 @@ from web_util import read_json_file, parse_curl
 import os
 import datetime
 from gcsa.event import Event
+import os
+
+DEBUG = False
+# if mac, debug = True
+if os.uname().sysname == "Darwin":
+    DEBUG = True
 
 
 @dataclasses.dataclass
@@ -179,8 +185,16 @@ def run_meitou():
 
 def run():
     events = run_calendar()
-    wsj_summary = run_wsj()
-    tech_summary = run_techcrunch()
+    try:
+        wsj_summary = run_wsj()
+    except Exception as e:
+        print(e)
+        wsj_summary = ""
+    try:
+        tech_summary = run_techcrunch()
+    except Exception as e:
+        print(e)
+        tech_summary = ""
     weather = run_weather()
     hacker_news = run_hacker_news()
     bookwisdom = run_book_wisdom()
@@ -209,7 +223,9 @@ def run():
     {wisdom}
     投资新闻: {meitou}
     """
-
+    if DEBUG:
+        print(result)
+        return
     with open(f"{PATH}/data/tts/{today_str}.txt", "w") as f:
         f.write(result)
     tts.get_tts_from_text(result, today_str)

@@ -4,6 +4,7 @@ from DataReader.DropboxReader import DropboxReader
 from DataWriter.OpenAIDataWriter import OpenAIDataWriter
 from constant import PATH
 import click
+import time
 
 api = {}
 with open(f"{PATH}/key.json") as f:
@@ -29,6 +30,7 @@ def main(filename, markdown=False):
     with open(newfilename) as f:
         data = f.read()
     new_data = whisper.improve_data(data)
+    time.sleep(5)
     newfilename2 = ".".join(filename.split(".")[0:-1]) + "_edit.txt"
     with open(newfilename2, "w") as f:
         f.write(new_data)

@@ -87,6 +87,7 @@ class DiskDataWriter(DataWriterBase):
             single_file = f"{rename}_{single_file}"
         if os.path.exists(os.path.join(base_folder, single_file)):
             print(f"{os.path.join(base_folder, single_file)} already exists")
+            return
         if self.dry_run:
             print(f"move {filename} to {os.path.join(base_folder, single_file)}")
             return
