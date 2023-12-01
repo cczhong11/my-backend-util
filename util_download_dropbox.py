@@ -14,34 +14,61 @@ dropbox = DropboxReader(
 rs = dropbox.get_data("/日记录音", ["m4a"])
 whisper = OpenAIDataWriter(api["openai"])
 ifttt = IFTTTPush(api["ifttt_dayone_webhook"])
-for entry in rs:
-    print(entry[1])
-    if not os.path.exists(f"/Users/tianchenzhong/Downloads/日记/{entry[0]}"):
-        dropbox.download(entry[1], f"/Users/tianchenzhong/Downloads/日记/{entry[0]}")
-    # handle exist inside
+download_path = "/Users/tianchenzhong/Downloads/日记/"
+
+
+def download_file(entry):
+    file_path = os.path.join(download_path, entry[0])
+    if not os.path.exists(file_path):
+        dropbox.download(entry[1], file_path)
+    base_name = ".".join(entry[0].split(".")[0:-1])
+    txt_path = os.path.join(download_path, f"{base_name}.txt")
+    if os.path.exists(txt_path):
+        return
     whisper.write_data(
-        f"/Users/tianchenzhong/Downloads/日记/{entry[0]}",
-        "/Users/tianchenzhong/Downloads/日记/",
+        file_path,
+        download_path,
         "whisper",
     )
-    data = ""
-    base = ".".join(entry[0].split(".")[0:-1])
-    filename = base + ".txt"
-    with open(f"/Users/tianchenzhong/Downloads/日记/{filename}") as f:
+
+
+def process_file(entry, process_type, suffix):
+    file_path = os.path.join(download_path, entry[0])
+    base_name = ".".join(entry[0].split(".")[0:-1])
+    new_file_path = os.path.join(download_path, f"{base_name}_{suffix}.txt")
+
+    if not os.path.exists(new_file_path):
+        with open(file_path) as f:
+            data = f.read()
+
+        if process_type == "improve":
+            processed_data = whisper.improve_data(data)
+        elif process_type == "suggest":
+            suggestion = whisper.suggest_data(data)
+            processed_data = data + "\n" + suggestion
+
+        with open(new_file_path, "w") as f:
+            f.write(processed_data)
+
+
+def push_data(entry, suffix):
+    base_name = ".".join(entry[0].split(".")[0:-1])
+    final_file_path = os.path.join(download_path, f"{base_name}_{suffix}.txt")
+
+    with open(final_file_path) as f:
         data = f.read()
-    edit_filename = base + "_edit.txt"
-    if not os.path.exists(f"/Users/tianchenzhong/Downloads/日记/{edit_filename}"):
-        new_data = whisper.improve_data(data)
-        with open(f"/Users/tianchenzhong/Downloads/日记/{edit_filename}", "w") as f:
-            f.write(new_data)
-    with open(f"/Users/tianchenzhong/Downloads/日记/{edit_filename}") as f:
-        new_data = f.read()
-    final_filename = base + "_final.txt"
-    if not os.path.exists(f"/Users/tianchenzhong/Downloads/日记/{final_filename}"):
-        suggestion = whisper.suggest_data(new_data)
-        new_data = base + "\n" + new_data + "\n" + suggestion
-        with open(f"/Users/tianchenzhong/Downloads/日记/{final_filename}", "w") as f:
-            f.write(new_data)
-    with open(f"/Users/tianchenzhong/Downloads/日记/{final_filename}") as f:
-        new_data = f.read()
-    ifttt.push_data({"value1": new_data}, "dayone_trigger")
+
+    ifttt.push_data({"value1": data}, "dayone_trigger")
+
+
+def process_entries(rs):
+    for entry in rs:
+        print(entry[1])
+        download_file(entry)
+        process_file(entry, "improve", "edit")
+        process_file(entry, "suggest", "final")
+        push_data(entry, "final")
+
+
+# Example usage
+process_entries(rs)
