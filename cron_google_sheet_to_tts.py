@@ -5,7 +5,10 @@ from DataFetcher.TTSFetcher import TTSFetcher
 import json
 import sys
 import os
-from log_util import logger
+from log_util import get_logger
+
+logger = get_logger()
+
 from DataExtractor.WechatExtractor import WechatExtractor
 
 api = {}

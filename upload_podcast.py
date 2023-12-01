@@ -1,12 +1,16 @@
 from DataReader.FileDataReader import FileDataReader
 from DataWriter.AWSS3DataWriter import AWSS3DataWriter
-from log_util import logger
+from log_util import get_logger
+
+logger = get_logger()
+
 import os
 from constant import PATH
 import pickle
 from datetime import datetime
 from web_util import read_json_file
 import pytz
+
 need_list = [""]
 SUBFIX = ".mp3"
 MOBI = "/Users/tczhong/Documents/mobi2mp3/mp3"
@@ -18,6 +22,7 @@ def check_filename(filename, need_list):
             return True
     return False
 
+
 def run():
     filereader = FileDataReader(MOBI)
     s3 = AWSS3DataWriter("rss-ztc")
@@ -25,10 +30,11 @@ def run():
         logger.exception("filereader health check failed")
     data = filereader.get_list("")
     for item in data:
-        filename = item['name']
+        filename = item["name"]
         if check_filename(filename, need_list) and SUBFIX in filename:
             s3.write_data("book", os.path.join(MOBI, filename))
             logger.info(f"upload {filename}")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     run()

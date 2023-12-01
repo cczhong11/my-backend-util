@@ -1,7 +1,10 @@
 from .DataPusherBase import DataPusherBase
 from DataFetcher.MichelinDataFetcher import Restaurant
 from notion_client import Client
-from log_util import logger
+from log_util import get_logger
+
+logger = get_logger()
+
 
 AMC_DB = "d0ed80f8b0ce4d8bb6aa4c6e6bfeaa6c"
 Restaurant_DB = "788b62b740ed41ce8827fd3e03ee4b97"

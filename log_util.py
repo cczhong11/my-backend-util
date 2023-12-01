@@ -19,6 +19,8 @@ if "tianchende" in os_name:
 if "mbp" in os_name:
     config_path = "darwin_log_path"
 
+logger = None
+
 
 def get_logger(project_name="", lvl=logging.DEBUG):
     date_str = time_util.str_time(time_util.get_current_date(), "%Y_%m_%d")
@@ -35,6 +37,3 @@ def get_logger(project_name="", lvl=logging.DEBUG):
     )
     logger = logging.getLogger(project_name)
     return logger
-
-
-logger = get_logger()

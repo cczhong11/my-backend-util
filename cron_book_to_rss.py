@@ -1,7 +1,7 @@
 from DataReader.AWSS3DataReader import AWSS3DataReader
 from DataWriter.RSSWriter import RSSWriter
 from DataWriter.AWSS3DataWriter import AWSS3DataWriter
-from log_util import logger
+from log_util import get_logger
 import os
 from constant import PATH
 import urllib.parse
@@ -11,6 +11,7 @@ import pytz
 
 from util import get_rss_path
 
+logger = get_logger()
 
 rss_path = get_rss_path()
 api = read_json_file(f"{PATH}/key.json")

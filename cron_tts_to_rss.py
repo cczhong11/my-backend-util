@@ -1,7 +1,10 @@
 from DataReader.AWSS3DataReader import AWSS3DataReader
 from DataWriter.RSSWriter import RSSWriter
 from DataWriter.AWSS3DataWriter import AWSS3DataWriter
-from log_util import logger
+from log_util import get_logger
+
+logger = get_logger()
+
 import os
 from constant import PATH
 import urllib.parse

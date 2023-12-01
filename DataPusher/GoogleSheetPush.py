@@ -1,6 +1,9 @@
 from .DataPusherBase import DataPusherBase
 import gspread
-from log_util import logger
+from log_util import get_logger
+
+logger = get_logger()
+
 import datetime
 
 
@@ -67,7 +70,7 @@ class GoogleSheetPush(DataPusherBase):
     def get_tags(self):
         rs = {}
         for line in self.all_data:
-            if len(line[0]) == 0 or len(line[4]) == 0:
+            if len(line[0]) == 0 or (len(line) > 4 and len(line[4]) == 0):
                 continue
             if line[4] not in rs:
                 rs[line[4]] = []

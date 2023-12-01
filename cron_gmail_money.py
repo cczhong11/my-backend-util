@@ -6,13 +6,16 @@ from web_util import read_json_file
 import time_util
 
 from constant import PATH
-from log_util import logger
+from log_util import get_logger
+
+logger = get_logger()
+
 import sys
 
 today = time_util.str_time(time_util.get_current_date(), "%Y/%m/%d")
 yesterday = time_util.str_time(time_util.get_yesterday(), "%Y/%m/%d")
-#yesterday = "2023/09/30"
-#today = "2023/02/11"
+# yesterday = "2023/09/30"
+# today = "2023/02/11"
 
 
 def run():
@@ -36,14 +39,12 @@ def run():
 
     # get data
     for _, member in EmailType.__members__.items():
-
         gmail.reset_query()
         gmail.set_sender(member)
         gmail.set_time(yesterday, today)
         rs = gmail.get_data()
         analyze_rs = gmail.analyze(member, rs)
         for r in analyze_rs:
-
             if r is None or len(r) != 3:
                 continue
             sheet.push_data(r)

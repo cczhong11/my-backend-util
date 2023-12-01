@@ -1,6 +1,9 @@
 from .DataPusherBase import DataPusherBase
 from telegram import Bot
-from log_util import logger
+from log_util import get_logger
+
+logger = get_logger()
+
 import asyncio
 
 

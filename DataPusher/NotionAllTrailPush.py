@@ -3,7 +3,9 @@ from DataPusher.NotionPush import notion_util
 from .DataPusherBase import DataPusherBase
 from DataFetcher.MichelinDataFetcher import Restaurant
 from notion_client import Client
-from log_util import logger
+from log_util import get_logger
+
+logger = get_logger()
 
 
 all_trails_page = "25374a4d5915413c9534b7b66d8d4494"

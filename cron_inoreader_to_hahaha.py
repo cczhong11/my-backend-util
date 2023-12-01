@@ -5,7 +5,10 @@ from DataPusher.GoogleSheetPush import GoogleSheetPush
 import json
 import sys
 import os
-from log_util import logger
+from log_util import get_logger
+
+logger = get_logger()
+
 
 api = {}
 with open(f"{PATH}/key.json") as f:

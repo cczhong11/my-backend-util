@@ -8,7 +8,10 @@ from googleapiclient.discovery import build
 import re
 from pathlib import Path
 import base64
-from log_util import logger
+from log_util import get_logger
+
+logger = get_logger()
+
 
 PATH = str(Path(__file__).parent.absolute())
 # If modifying these scopes, delete the file token.json.

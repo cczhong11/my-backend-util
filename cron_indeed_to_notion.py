@@ -3,7 +3,10 @@ from DataPusher.NotionPush import NotionPush, notion_util
 from web_util import read_json_file
 from time_util import get_current_date, add_time, str_time
 from constant import PATH
-from log_util import logger
+from log_util import get_logger
+
+logger = get_logger()
+
 import sys
 import os
 

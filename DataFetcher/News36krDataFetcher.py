@@ -4,7 +4,9 @@ from .DataFetcherBase import DataFetcherBase
 from functools import lru_cache
 import re
 import json
-from log_util import logger
+from log_util import get_logger
+
+logger = get_logger()
 
 
 class News36krDataFetcher(DataFetcherBase):

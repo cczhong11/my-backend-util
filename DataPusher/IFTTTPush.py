@@ -1,6 +1,8 @@
 from .DataPusherBase import DataPusherBase
 import requests
-from log_util import logger
+from log_util import get_logger
+
+logger = get_logger()
 
 
 class IFTTTPush(DataPusherBase):

@@ -1,6 +1,9 @@
 from .DataPusherBase import DataPusherBase
 from requests.auth import HTTPBasicAuth
-from log_util import logger
+from log_util import get_logger
+
+logger = get_logger()
+
 import typing as t
 import requests
 import time

@@ -4,7 +4,10 @@ from DataPusher.TogglePush import TogglePush
 import json
 import sys
 import os
-from log_util import logger
+from log_util import get_logger
+
+logger = get_logger()
+
 
 api = {}
 with open(f"{PATH}/key.json") as f:
@@ -35,7 +38,7 @@ def run():
     shortcodes = get_shortcodes(Gsheet)
 
     event = get_event(Gsheet)
-    toggle = TogglePush(shortcodes, api["toggle_api"], project_map )
+    toggle = TogglePush(shortcodes, api["toggle_api"], project_map)
     toggle.push_data(event)
 
 

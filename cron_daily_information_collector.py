@@ -22,7 +22,7 @@ import datetime
 from gcsa.event import Event
 import os
 import log_util
-
+from util import get_tts_path
 
 logger = log_util.get_logger("cron_daily_information_collector")
 
@@ -53,7 +53,9 @@ class DailyInformation:
             [
                 f"从{e.start.hour}:{e.start.minute}到{e.end.hour}:{e.end.minute} {e.summary} {e.description or ''}"
                 for e in self.events or []
-                if e.summary != "ME" and e.summary != "wmtd"
+                if isinstance(e.start, datetime.datetime)
+                and e.summary != "ME"
+                and e.summary != "wmtd"
             ]
         )
         wisdom = "\n".join(self.book_text.wisdoms)
@@ -112,7 +114,12 @@ def run_calendar() -> List[Event]:
         "primary", time_util.get_current_date(), time_util.get_next_day()
     )
     for e in main_events:
-        if e.summary != "ME" and e.summary != "wmtd" and "°C" not in e.summary:
+        if (
+            e.summary != "ME"
+            and e.summary != "wmtd"
+            and "°C" not in e.summary
+            and "logged" not in e.summary
+        ):
             result.append(e)
     return result
 
@@ -209,6 +216,7 @@ def run_meitou():
 
 
 def run():
+    logger.info("start cron_daily_information_collector")
     collect_f = {
         "events": run_calendar,
         "wsj_summary": run_wsj,
@@ -244,12 +252,13 @@ def run():
     if DEBUG:
         print(result)
         return
-    with open(f"{PATH}/data/tts/{today_str}.txt", "w") as f:
+    tts_path = get_tts_path()
+    with open(f"{tts_path}/{today_str}.txt", "w") as f:
         f.write(result)
     tts.get_tts_from_text(result, today_str)
     s3.write_data(
         "daily",
-        os.path.join(f"{PATH}/data/tts/", f"{tts.current_title()}.mp3"),
+        os.path.join(f"{tts_path}", f"{tts.current_title()}.mp3"),
     )
 
 
