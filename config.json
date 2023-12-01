@@ -7,5 +7,7 @@
     "mac_rss_path": "/Users/tianchenzhong/Dropbox/TCCode/all_in_one_backend/data",
     "darwin_rss_path": "/Users/tianchen/Dropbox (Personal)/TCCode/all_in_one_backend/data",
     "mac_indeed_path": "/Users/tianchenzhong/Dropbox/TCCode/webcrawler/indeed_craweler/indeed.db",
-    "pi_indeed_path": "/home/tczhong/Documents/indeed/indeed.db"
+    "pi_indeed_path": "/home/tczhong/Documents/indeed/indeed.db",
+    "tts_path": "/home/tczhong/data/tts",
+    "mac_tts_path": "/Users/tianchenzhong/Dropbox/TCCode/all_in_one_backend/data/tts"
 }

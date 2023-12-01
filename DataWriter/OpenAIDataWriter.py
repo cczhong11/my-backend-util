@@ -12,12 +12,14 @@ class OpenAIDataWriter(DataWriterBase):
         if task == "whisper":
             single_filename = filename.split("/")[-1]
             single_filename = single_filename.split(".")[0] + ".txt"
-            print(filename)
-            audio_file = open(filename, "rb")
-            transcript = openai.Audio.transcribe("whisper-1", audio_file)
-            audio_file.close()
             if os.path.exists(os.path.join(dst_path, single_filename)):
                 return
+            print(filename)
+            audio_file = open(filename, "rb")
+            # handle too long problem
+            transcript = openai.Audio.transcribe("whisper-1", audio_file)
+            audio_file.close()
+
             with open(os.path.join(dst_path, single_filename), "w") as f:
                 f.write(transcript.text)
 

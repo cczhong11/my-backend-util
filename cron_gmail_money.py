@@ -11,7 +11,7 @@ import sys
 
 today = time_util.str_time(time_util.get_current_date(), "%Y/%m/%d")
 yesterday = time_util.str_time(time_util.get_yesterday(), "%Y/%m/%d")
-#yesterday = "2023/02/09"
+#yesterday = "2023/09/30"
 #today = "2023/02/11"
 
 

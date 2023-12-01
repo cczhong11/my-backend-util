@@ -3,6 +3,7 @@ from DataPusher.IFTTTPush import IFTTTPush
 from DataReader.DropboxReader import DropboxReader
 from DataWriter.OpenAIDataWriter import OpenAIDataWriter
 from constant import PATH
+import os
 
 api = {}
 with open(f"{PATH}/key.json") as f:
@@ -15,21 +16,32 @@ whisper = OpenAIDataWriter(api["openai"])
 ifttt = IFTTTPush(api["ifttt_dayone_webhook"])
 for entry in rs:
     print(entry[1])
-    dropbox.download(entry[1], f"/Users/tianchenzhong/Downloads/日记/{entry[0]}")
-
+    if not os.path.exists(f"/Users/tianchenzhong/Downloads/日记/{entry[0]}"):
+        dropbox.download(entry[1], f"/Users/tianchenzhong/Downloads/日记/{entry[0]}")
+    # handle exist inside
     whisper.write_data(
         f"/Users/tianchenzhong/Downloads/日记/{entry[0]}",
         "/Users/tianchenzhong/Downloads/日记/",
         "whisper",
     )
     data = ""
-    filename = ".".join(entry[0].split(".")[0:-1]) + ".txt"
+    base = ".".join(entry[0].split(".")[0:-1])
+    filename = base + ".txt"
     with open(f"/Users/tianchenzhong/Downloads/日记/{filename}") as f:
         data = f.read()
-    print(data)
-    new_data = whisper.improve_data(data)
-    suggestion = whisper.suggest_data(data)
-    new_data = new_data + "\n" + suggestion
-    with open(f"/Users/tianchenzhong/Downloads/日记/{filename}", "w") as f:
-        f.write(new_data)
+    edit_filename = base + "_edit.txt"
+    if not os.path.exists(f"/Users/tianchenzhong/Downloads/日记/{edit_filename}"):
+        new_data = whisper.improve_data(data)
+        with open(f"/Users/tianchenzhong/Downloads/日记/{edit_filename}", "w") as f:
+            f.write(new_data)
+    with open(f"/Users/tianchenzhong/Downloads/日记/{edit_filename}") as f:
+        new_data = f.read()
+    final_filename = base + "_final.txt"
+    if not os.path.exists(f"/Users/tianchenzhong/Downloads/日记/{final_filename}"):
+        suggestion = whisper.suggest_data(new_data)
+        new_data = base + "\n" + new_data + "\n" + suggestion
+        with open(f"/Users/tianchenzhong/Downloads/日记/{final_filename}", "w") as f:
+            f.write(new_data)
+    with open(f"/Users/tianchenzhong/Downloads/日记/{final_filename}") as f:
+        new_data = f.read()
     ifttt.push_data({"value1": new_data}, "dayone_trigger")

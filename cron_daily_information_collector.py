@@ -12,7 +12,7 @@ from DataReader.PersonalBackendReader import PersonalBackendReader
 from DataFetcher.ZhihuArticleFetcher import ZhihuArticleFetcher
 from DataWriter.AWSS3DataWriter import AWSS3DataWriter
 from DataWriter.OpenAIDataWriter import OpenAIDataWriter
-from constant import PATH
+from constant import PATH, DATAPATH
 import time_util
 import dataclasses
 import re
@@ -21,6 +21,17 @@ import os
 import datetime
 from gcsa.event import Event
 import os
+import logging
+
+log_file = f"{PATH}/log/daily_info_{time_util.str_time(time_util.get_current_date(), '%Y-%m-%d')}.log"
+logging.basicConfig(
+    filename=log_file,
+    filemode="a",
+    format="%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    level=logging.INFO,
+)
+logger = logging.getLogger()
 
 DEBUG = False
 # if mac, debug = True
@@ -42,6 +53,27 @@ class DailyInformation:
     hacker_news: list
     book_text: BookWisdom
     meitou: list
+    tech_summary: str
+
+    def __str__(self):
+        events = "\n".join(
+            [
+                f"从{e.start.hour}:{e.start.minute}到{e.end.hour}:{e.end.minute} {e.summary} {e.description or ''}"
+                for e in self.events or []
+                if e.summary != "ME" and e.summary != "wmtd"
+            ]
+        )
+        wisdom = "\n".join(self.book_text.wisdoms)
+        meitou = "\n".join(self.meitou)
+        return f"""
+        今天的日历: {self.events}
+        今天的新闻: {self.wsj_news}
+        今天的天气: {self.weather}
+        hacker news: {self.hacker_news}
+        读过的书: {self.book_text.book_name}
+        {self.book_text.wisdoms}
+        投资新闻: {self.meitou}
+        """
 
 
 today = time_util.str_time(time_util.get_current_date(), "%Y/%m/%d")
@@ -184,45 +216,38 @@ def run_meitou():
 
 
 def run():
-    events = run_calendar()
-    try:
-        wsj_summary = run_wsj()
-    except Exception as e:
-        print(e)
-        wsj_summary = ""
-    try:
-        tech_summary = run_techcrunch()
-    except Exception as e:
-        print(e)
-        tech_summary = ""
-    weather = run_weather()
-    hacker_news = run_hacker_news()
-    bookwisdom = run_book_wisdom()
-    meitou = run_meitou()
+    collect_f = {
+        "events": run_calendar,
+        "wsj_summary": run_wsj,
+        "weather": run_weather,
+        "hacker_news": run_hacker_news,
+        "book_text": run_book_wisdom,
+        "meitou": run_meitou,
+        "tech_summary": run_techcrunch,
+    }
+    result = {}
+    for k, v in collect_f.items():
+        try:
+            result[k] = v()
+        except Exception as e:
+            logger.error(f"{k} failed, error: {e}")
+            if k == "events" or k == "hacker_news" or k == "meitou":
+                result[k] = []
+            else:
+                result[k] = ""
     daily_info = DailyInformation(
-        events, wsj_summary, weather, hacker_news, bookwisdom, meitou
+        result["events"],
+        result["wsj_summary"],
+        result["weather"],
+        result["hacker_news"],
+        result["book_text"],
+        result["meitou"],
+        result["tech_summary"],
     )
-    event_str = "\n".join(
-        [
-            f"从{e.start.hour}:{e.start.minute}到{e.end.hour}:{e.end.minute} {e.summary} {e.description or ''}"
-            for e in events or []
-            if e.summary != "ME" and e.summary != "wmtd"
-        ]
-    )
-    wisdom = "\n".join(daily_info.book_text.wisdoms)
-    meitou = "\n".join(daily_info.meitou)
+
     tts = TTSFetcher(f"{PATH}/cookie/tts-google.json", f"{PATH}/data/tts")
     s3 = AWSS3DataWriter("rss-ztc")
-    result = f"""
-    今天的日历: {event_str}
-    今天的新闻: {daily_info.wsj_news}
-    科技新闻: {tech_summary}
-    今天的天气: {daily_info.weather}
-    hacker news: {' '.join(daily_info.hacker_news)}
-    读过的书: {daily_info.book_text.book_name}
-    {wisdom}
-    投资新闻: {meitou}
-    """
+    result = str(daily_info)
     if DEBUG:
         print(result)
         return
