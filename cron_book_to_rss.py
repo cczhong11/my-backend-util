@@ -9,13 +9,10 @@ from web_util import read_json_file
 import pytz
 
 
-config = read_json_file(f"{PATH}/config.json")
-os_name = os.uname().nodename
-config_path = "rss_path"
-if "MacBook" in os_name:
-    config_path = "mac_rss_path"
-if "mbp" in os_name:
-    config_path = "darwin_rss_path"
+from util import get_rss_path
+
+
+rss_path = get_rss_path()
 api = read_json_file(f"{PATH}/key.json")
 bucket = api["s3_rss_bucket"]
 
@@ -26,7 +23,7 @@ def run():
     if not s3_reader.health_check() or not s3_writer.health_check():
         logger.exception("aws health check failed")
     rss_writer = RSSWriter(
-        config[config_path],
+        rss_path,
         "my book to listen",
         "https://study.tczhong.com",
         "podcast: my book to listen",
@@ -36,7 +33,7 @@ def run():
         link = f"https://{bucket}.s3.amazonaws.com/{urllib.parse.quote(feed['Key'])}"
         rss_writer.add_podcast(feed["Key"], link, feed["LastModified"])
     rss_writer.write_data("book_podcast.xml", "")
-    s3_writer.write_data("book", os.path.join(config[config_path], "book_podcast.xml"))
+    s3_writer.write_data("book", os.path.join(rss_path, "book_podcast.xml"))
 
 
 if __name__ == "__main__":

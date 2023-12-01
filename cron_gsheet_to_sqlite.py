@@ -25,14 +25,11 @@ SQL = """CREATE TABLE IF NOT EXISTS error_log (
     return_code INTEGER
 );"""
 
-config = read_json_file(f"{PATH}/config.json")
-os_name = os.uname().nodename
-config_path = "rss_path"
-if "MacBook" in os_name:
-    config_path = "mac_rss_path"
-if "mbp" in os_name:
-    config_path = "darwin_rss_path"
-path = config[config_path]
+from util import get_rss_path
+
+
+rss_path = get_rss_path()
+path = rss_path
 
 
 def create_table():

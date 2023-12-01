@@ -12,7 +12,7 @@ from DataReader.PersonalBackendReader import PersonalBackendReader
 from DataFetcher.ZhihuArticleFetcher import ZhihuArticleFetcher
 from DataWriter.AWSS3DataWriter import AWSS3DataWriter
 from DataWriter.OpenAIDataWriter import OpenAIDataWriter
-from constant import PATH, DATAPATH
+from constant import PATH
 import time_util
 import dataclasses
 import re
@@ -21,17 +21,10 @@ import os
 import datetime
 from gcsa.event import Event
 import os
-import logging
+import log_util
 
-log_file = f"{PATH}/log/daily_info_{time_util.str_time(time_util.get_current_date(), '%Y-%m-%d')}.log"
-logging.basicConfig(
-    filename=log_file,
-    filemode="a",
-    format="%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-    level=logging.INFO,
-)
-logger = logging.getLogger()
+
+logger = log_util.get_logger("cron_daily_information_collector")
 
 DEBUG = False
 # if mac, debug = True
@@ -66,13 +59,13 @@ class DailyInformation:
         wisdom = "\n".join(self.book_text.wisdoms)
         meitou = "\n".join(self.meitou)
         return f"""
-        今天的日历: {self.events}
+        今天的日历: {events}
         今天的新闻: {self.wsj_news}
         今天的天气: {self.weather}
         hacker news: {self.hacker_news}
         读过的书: {self.book_text.book_name}
-        {self.book_text.wisdoms}
-        投资新闻: {self.meitou}
+        {wisdom}
+        投资新闻: {meitou}
         """
 
 

@@ -9,12 +9,10 @@ from datetime import datetime
 from web_util import read_json_file
 import pytz
 
+from util import get_rss_path
 
-config = read_json_file(f"{PATH}/config.json")
-os_name = os.uname().nodename
-config_path = "rss_path"
-if "MacBook" in os_name:
-    config_path = "mac_rss_path"
+
+rss_path = get_rss_path()
 api = read_json_file(f"{PATH}/key.json")
 bucket = api["s3_rss_bucket"]
 
@@ -25,7 +23,7 @@ def run():
     if not news.health_check():
         logger.exception("36kr health check failed")
     rss_writer = RSSWriter(
-        config[config_path],
+        rss_path,
         "36kr must read",
         "https://36kr.com/topics",
         "36kr must read articles daily and weekly",
@@ -42,7 +40,7 @@ def run():
             ),
         )
     rss_writer.write_data("36kr.xml", "")
-    s3.write_data("news", os.path.join(config[config_path], "36kr.xml"))
+    s3.write_data("news", os.path.join(rss_path, "36kr.xml"))
 
 
 if __name__ == "__main__":

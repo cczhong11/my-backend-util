@@ -1,8 +1,8 @@
 {
     "data_main_path": "",
-    "log_path": "/home/tczhong/log/all_in_one.log",
-    "mac_log_path": "/Users/tianchenzhong/Dropbox/TCCode/all_in_one_backend/log.log",
-    "darwin_log_path": "/Users/tianchen/Dropbox (Personal)/TCCode/all_in_one_backend/log.log",
+    "log_path": "/home/tczhong/log/",
+    "mac_log_path": "/Users/tianchenzhong/Dropbox/TCCode/all_in_one_backend/data/log/",
+    "darwin_log_path": "/Users/tianchen/Dropbox (Personal)/TCCode/all_in_one_backend/data/log/",
     "rss_path": "/home/tczhong/data/rss",
     "mac_rss_path": "/Users/tianchenzhong/Dropbox/TCCode/all_in_one_backend/data",
     "darwin_rss_path": "/Users/tianchen/Dropbox (Personal)/TCCode/all_in_one_backend/data",
