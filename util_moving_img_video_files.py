@@ -17,10 +17,8 @@ if os.path.exists("/Volumes/BackupSSD/"):
     PATH = "/Volumes/BackupSSD/"
     BACKUP_MODE = True
 possible_path = [
-    "/Volumes/POCKET2/DCIM/103MEDIA",
-    "/Volumes/POCKET2/DCIM/101MEDIA",
     "/Volumes/pocket3/DCIM/DJI_001",
-    "/Volumes/POCKET2/DCIM/102MEDIA",
+    "/Volumes/POCKET2/DCIM/DJI_001",
     "/Volumes/dji/DCIM/101MEDIA",
     "/Volumes/dji mini3/DCIM/101MEDIA",
     "/Volumes/dji mini3/DCIM/100MEDIA",
@@ -31,7 +29,7 @@ possible_path = [
     "/Volumes/BackupSSD/iphone13/AnyTrans-Export-2023-04-22/My Photos/",
 ]
 prefix = {
-    "/Volumes/POCKET2/DCIM/": "pocket2",
+    "/Volumes/POCKET2/DCIM/": "pocket3",
     "/Volumes/pocket3/DCIM/": "pocket3",
     "/Volumes/dji/DCIM/": "mini2",
     "/Volumes/dji mini3/DCIM/": "mini3",

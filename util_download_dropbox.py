@@ -16,6 +16,14 @@ whisper = OpenAIDataWriter(api["openai"])
 ifttt = IFTTTPush(api["ifttt_dayone_webhook"])
 download_path = "/Users/tianchenzhong/Downloads/日记/"
 
+import chardet
+
+
+def read_file_with_correct_encoding(file_path):
+    with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+        data = f.read()
+    return data
+
 
 def download_file(entry):
     file_path = os.path.join(download_path, entry[0])
@@ -33,13 +41,15 @@ def download_file(entry):
 
 
 def process_file(entry, process_type, suffix):
-    file_path = os.path.join(download_path, entry[0])
     base_name = ".".join(entry[0].split(".")[0:-1])
+    file_path = os.path.join(download_path, f"{base_name}.txt")
+
+    if process_type == "suggest":
+        file_path = os.path.join(download_path, f"{base_name}_edit.txt")
     new_file_path = os.path.join(download_path, f"{base_name}_{suffix}.txt")
 
     if not os.path.exists(new_file_path):
-        with open(file_path) as f:
-            data = f.read()
+        data = read_file_with_correct_encoding(file_path)
 
         if process_type == "improve":
             processed_data = whisper.improve_data(data)

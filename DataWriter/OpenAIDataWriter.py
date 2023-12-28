@@ -6,7 +6,7 @@ import openai
 class OpenAIDataWriter(DataWriterBase):
     def __init__(self, api: str):
         super(OpenAIDataWriter, self).__init__()
-        openai.api_key = api
+        self.client = openai.OpenAI(api_key=api)
 
     def write_data(self, filename, dst_path, task):
         if task == "whisper":
@@ -17,7 +17,9 @@ class OpenAIDataWriter(DataWriterBase):
             print(filename)
             audio_file = open(filename, "rb")
             # handle too long problem
-            transcript = openai.Audio.transcribe("whisper-1", audio_file)
+            transcript = self.client.audio.transcriptions.create(
+                "whisper-1", file=audio_file
+            )
             audio_file.close()
 
             with open(os.path.join(dst_path, single_filename), "w") as f:
@@ -27,7 +29,7 @@ class OpenAIDataWriter(DataWriterBase):
         model = "gpt-3.5-turbo"
         if use_16k_model:
             model = "gpt-3.5-turbo-16k"
-        completion = openai.ChatCompletion.create(
+        completion = self.client.chat.completions.create(
             model=model, messages=[{"role": "user", "content": prompt}]
         )
 

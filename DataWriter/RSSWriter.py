@@ -2,7 +2,9 @@ from DataWriter.DataWriterBase import DataWriterBase
 import os
 from feedgen.feed import FeedGenerator
 
-LOCAL_PATH = "/home/tczhong/all_in_one_backend/data/tts"
+from util import get_tts_path
+
+LOCAL_PATH = get_tts_path()
 
 
 class RSSWriter(DataWriterBase):

@@ -245,14 +245,14 @@ def run():
         result["meitou"],
         result["tech_summary"],
     )
-
-    tts = TTSFetcher(f"{PATH}/cookie/tts-google.json", f"{PATH}/data/tts")
+    tts_path = get_tts_path()
+    tts = TTSFetcher(f"{PATH}/cookie/tts-google.json", tts_path)
     s3 = AWSS3DataWriter("rss-ztc")
     result = str(daily_info)
     if DEBUG:
         print(result)
         return
-    tts_path = get_tts_path()
+
     with open(f"{tts_path}/{today_str}.txt", "w") as f:
         f.write(result)
     tts.get_tts_from_text(result, today_str)
