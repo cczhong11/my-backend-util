@@ -16,7 +16,7 @@ print(os_name)
 config_path = "log_path"
 if "tianchende" in os_name:
     config_path = "mac_log_path"
-if "mbp" in os_name:
+elif "mbp" in os_name:
     config_path = "darwin_log_path"
 
 logger = None

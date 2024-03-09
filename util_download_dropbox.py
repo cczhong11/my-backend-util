@@ -12,6 +12,7 @@ dropbox = DropboxReader(
     api["dropbox_key"], api["dropbox_secret"], api["dropbox_refresh"]
 )
 rs = dropbox.get_data("/日记录音", ["m4a"])
+daily_think = dropbox.get_data("/每日心得", ["m4a"])
 whisper = OpenAIDataWriter(api["openai"])
 ifttt = IFTTTPush(api["ifttt_dayone_webhook"])
 download_path = "/Users/tianchenzhong/Downloads/日记/"
@@ -68,17 +69,21 @@ def push_data(entry, suffix):
     with open(final_file_path) as f:
         data = f.read()
 
-    ifttt.push_data({"value1": data}, "dayone_trigger")
+    ifttt.push_data({"value1": base_name + "\n" + data}, "dayone_trigger")
 
 
-def process_entries(rs):
+def process_entries(rs, skip_suggest=False):
     for entry in rs:
         print(entry[1])
         download_file(entry)
         process_file(entry, "improve", "edit")
-        process_file(entry, "suggest", "final")
-        push_data(entry, "final")
+        if not skip_suggest:
+            process_file(entry, "suggest", "final")
+            push_data(entry, "final")
+        else:
+            push_data(entry, "edit")
 
 
 # Example usage
 process_entries(rs)
+process_entries(daily_think, skip_suggest=True)

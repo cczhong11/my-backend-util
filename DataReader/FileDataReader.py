@@ -87,6 +87,8 @@ class FileDataReader(DataReaderBase):
         if not os.path.exists(absolute_path):
             return rs
         for item in os.listdir(absolute_path):
+            if item.startswith("."):
+                continue
             if (
                 ".MP4" in item
                 or ".mp4" in item

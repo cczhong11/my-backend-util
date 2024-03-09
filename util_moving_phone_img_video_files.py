@@ -17,9 +17,10 @@ PATH = "/Volumes/My Book/photo backup/phone"
 possible_path = [
     # "/Volumes/photo/iphonese/三星",
     # "/Volumes/photo/iphonese/相机胶卷",
-    # "/Volumes/My Book/photo backup/iphonexs"
+    # "/Volumes/My Book/photo backup/tmp"
     # "/Volumes/My Book/iphone12/AnyTrans-Export-2023-09-17/My Photos",
-    "/Users/tianchenzhong/Documents/All"
+    # "/Volumes/My Book/All",
+    "/Volumes/T7 Touch/All",
 ]
 prefix = {
     "/Volumes/POCKET2/DCIM/": "pocket2",

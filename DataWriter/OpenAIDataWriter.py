@@ -11,14 +11,14 @@ class OpenAIDataWriter(DataWriterBase):
     def write_data(self, filename, dst_path, task):
         if task == "whisper":
             single_filename = filename.split("/")[-1]
-            single_filename = single_filename.split(".")[0] + ".txt"
+            single_filename = ".".join(single_filename.split(".")[0:-1]) + ".txt"
             if os.path.exists(os.path.join(dst_path, single_filename)):
                 return
-            print(filename)
+
             audio_file = open(filename, "rb")
             # handle too long problem
             transcript = self.client.audio.transcriptions.create(
-                "whisper-1", file=audio_file
+                model="whisper-1", file=audio_file
             )
             audio_file.close()
 

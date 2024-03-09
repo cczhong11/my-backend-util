@@ -63,6 +63,7 @@ class DailyInformation:
         return f"""
         今天的日历: {events}
         今天的新闻: {self.wsj_news}
+        科技新闻: {self.tech_summary}
         今天的天气: {self.weather}
         hacker news: {self.hacker_news}
         读过的书: {self.book_text.book_name}
