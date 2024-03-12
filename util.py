@@ -10,6 +10,17 @@ def read_json_file(file_path):
     return data
 
 
+def get_db_path():
+    config = read_json_file(f"{PATH}/config.json")
+    os_name = os.uname().nodename
+    # config_path = "rss_path"
+    if "MacBook" in os_name:
+        config_path = "mac_db_path"
+    else:
+        return None
+    return config[config_path]
+
+
 def get_rss_path():
     config = read_json_file(f"{PATH}/config.json")
 

@@ -10,6 +10,9 @@ from sqlite_util import (
     insert_database,
     update_database,
 )
+from DataWriter.SqliteDataWriter import SqliteDataWriter
+import datetime
+from dateutil.parser import parse
 
 api = {}
 with open(f"{PATH}/key.json") as f:
@@ -17,7 +20,7 @@ with open(f"{PATH}/key.json") as f:
 
 # SQL to create a new table called error_log
 # with 5 columns: timestamp, user, cmd,stdout,return code
-SQL = """CREATE TABLE IF NOT EXISTS error_log (
+ERROR_LOG_SQL = """CREATE TABLE IF NOT EXISTS error_log (
     timestamp TEXT,
     user TEXT,
     cmd TEXT,
@@ -25,36 +28,39 @@ SQL = """CREATE TABLE IF NOT EXISTS error_log (
     return_code INTEGER
 );"""
 
-from util import get_rss_path
+MONEY_LOG_SQL = """CREATE TABLE IF NOT EXISTS money_log (
+    timestamp TEXT,
+    description TEXT,
+    amount float,
+    category varchar(255)    
+);
+"""
+from util import get_db_path, get_rss_path
 
 
 rss_path = get_rss_path()
 path = rss_path
 
 
-def create_table():
-    if not os.path.exists(f"{path}/error_log.db"):
-        create_datebase(f"{path}/error_log.db", SQL)
-
-
-def run():
+def run_error_log():
     Gsheet = GoogleSheetReader(f"{PATH}/cookie/service_account.json", api["error_log"])
     cleaner = GoogleSheetPush(f"{PATH}/cookie/service_account.json", api["error_log"])
     data = Gsheet.get_data("Sheet1")
-    create_table()
-    rs = select_database(f"{path}/error_log.db", "SELECT count(*) FROM error_log")
+
+    writer = SqliteDataWriter(f"{path}/error_log.db", "error_log", ERROR_LOG_SQL)
+    rs = writer.get_data("SELECT count(*) FROM error_log")
+
     for row in rs:
         current_count = row[0]
     for row in data:
         if row[0] == "":
             continue
-
-        insert_database(
+        writer.write_data(
             f"{path}/error_log.db",
             "INSERT INTO error_log VALUES (?,?,?,?,?)",
             (row[0], row[1], row[2], row[3], row[4]),
         )
-    rs = select_database(f"{path}/error_log.db", "SELECT count(*) FROM error_log")
+    rs = writer.get_data("SELECT count(*) FROM error_log")
     for row in rs:
         new_count = row[0]
     if new_count - current_count == len(data):
@@ -62,5 +68,44 @@ def run():
         cleaner.clean_data()
 
 
+def handle_datetime(date_str):
+    try:
+        date = parse(date_str)
+        return date
+    except ValueError:
+        print(f"Cannot parse date string {date_str}")
+        return None
+
+
+def run_money_fetch():
+    db_path = get_db_path() + "money_log.db"
+    if not db_path:
+        return
+    sheet = GoogleSheetReader(
+        f"{PATH}/cookie/service_account.json",
+        api["money_sheet"],
+    )
+    data = sheet.get_data("archive")
+    writer = SqliteDataWriter(db_path, "money_log", MONEY_LOG_SQL)
+    rs = writer.get_data("SELECT timestamp,description FROM money_log")
+    all_data = {str(row[0]) + row[1] for row in rs}
+
+    for index, row in enumerate(data):
+        if row[0] == "":
+            print(index)
+            continue
+        date = handle_datetime(row[0])
+        if str(date) + row[1] in all_data:
+            print(f"row {index} already exists")
+            continue
+        date = handle_datetime(row[0])
+        writer.write_data(
+            db_path,
+            "INSERT INTO money_log VALUES (?,?,?,?)",
+            (date, row[1], row[2], row[3]),
+        )
+
+
 if __name__ == "__main__":
-    run()
+    run_error_log()
+    # run_money_fetch()
